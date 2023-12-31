@@ -25,10 +25,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(FairBudget
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        expense_table.h expense_table.cpp expense_table.ui
-        person_table.h person_table.cpp person_table.ui
-        payment_table.h payment_table.cpp payment_table.ui
-        owed_table.h owed_table.cpp owed_table.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET FairBudget APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

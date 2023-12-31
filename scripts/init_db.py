@@ -178,13 +178,20 @@ def main():
         help='Remove existing database if one already exists and start fresh.',
         action='store_true'
     )
+    parser.add_argument(
+        '-i', '--insert-fixtures',
+        help='Insert fixtures into DB.',
+        action='store_true'
+    )
     args = parser.parse_args()
 
     if args.clean:
         remove_existing(DB_PATH)
 
     create_tables(DB_PATH)
-    insert_fixtures(DB_PATH)
+
+    if args.insert_fixtures:
+        insert_fixtures(DB_PATH)
 
 
 if __name__ == '__main__':
