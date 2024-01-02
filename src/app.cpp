@@ -12,3 +12,7 @@ App::~App()
 {
     delete ui;
 }
+
+void App::loadDb() {
+    m_entityManager.openDb();
+}
