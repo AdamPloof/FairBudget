@@ -6,7 +6,7 @@
 
 // }
 
-Expense::Expense(QObject *parent) : QAbstractTableModel(parent) {};
+Expense::Expense(QObject *parent) : QAbstractTableModel(parent), m_name("Expense") {};
 
 int Expense::rowCount(const QModelIndex &parent) const {
     return 3;
@@ -24,4 +24,8 @@ QVariant Expense::data(const QModelIndex &index, int role) const
                    .arg(index.column() +1);
 
     return QVariant();
+}
+
+QString Expense::entityName() {
+    return m_name;
 }

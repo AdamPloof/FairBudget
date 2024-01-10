@@ -74,3 +74,4 @@ CMakeLists.txt.user*
 
 # Build
 build/
+data.db
