@@ -3,34 +3,32 @@
 #include <vector>
 
 #include "app.h"
+#include "repositories/expense_repository.h"
+#include "models/expense.h"
 #include "./ui_app.h"
 
-App::App(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::App)
+App::App(std::shared_ptr<EntityManager> em, QWidget *parent)
+    : QMainWindow(parent),
+    m_entityManager(em),
+    ui(new Ui::App)
 {
     ui->setupUi(this);
-    loadDb();
 }
 
 App::~App()
 {
     delete ui;
+    delete m_expense;
+}
+
+void App::run() {
+    loadDb();
+    ExpenseRepository expenseRepo = ExpenseRepository(m_entityManager);
+    m_expense = new Expense();
+    expenseRepo.fetchRecords(m_expense);
+    ui->expenseTbl->setModel(m_expense);
 }
 
 void App::loadDb() {
-    m_entityManager.openDb();
-
-    std::vector<QString> fields;
-    fields.push_back("id");
-    fields.push_back("description");
-    fields.push_back("amount");
-
-    QString entity = "expense";
-    EntityQueryParams params;
-    params.entityName = entity;
-    params.fields = fields;
-
-    QString q("SELECT * FROM expense");
-    m_entityManager.fetchRecords(params);
+    m_entityManager->openDb();
 }

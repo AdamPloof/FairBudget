@@ -26,7 +26,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         models/expense.h models/expense.cpp
+        models/model_interface.h
         services/entity_manager.h services/entity_manager.cpp
+        repositories/entity_repository.h repositories/entity_repository.cpp
+        repositories/expense_repository.h repositories/expense_repository.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET FairBudget APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

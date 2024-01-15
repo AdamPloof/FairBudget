@@ -4,8 +4,9 @@
 #include <QAbstractTableModel>
 #include <QString>
 #include <QList>
+#include "model_interface.h"
 
-class Expense : public QAbstractTableModel {
+class Expense : public QAbstractTableModel, public ModelInterface {
     Q_OBJECT
 
     using ExpenseLine = QList<QString>;
@@ -17,11 +18,14 @@ class Expense : public QAbstractTableModel {
         int rowCount(const QModelIndex &parent = QModelIndex()) const override;
         int columnCount(const QModelIndex &parent = QModelIndex()) const override;
         QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-        QString entityName();
+        QString name() override;
+        std::vector<QString> fields() override;
+        void addRow(ExpenseLine row) override;
 
     private:
         QList<ExpenseLine> m_expenseLines;
         QString m_name;
+        std::vector<QString> m_fields;
 };
 
 #endif // EXPENSE_H

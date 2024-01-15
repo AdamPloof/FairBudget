@@ -2,7 +2,9 @@
 #define APP_H
 
 #include <QMainWindow>
+#include <memory>
 #include "services/entity_manager.h"
+#include "models/expense.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -16,13 +18,15 @@ class App : public QMainWindow
     Q_OBJECT
 
 public:
-    App(QWidget *parent = nullptr);
+    App(std::shared_ptr<EntityManager> em, QWidget *parent = nullptr);
     ~App();
 
+    void run();
     void loadDb();
 
 private:
     Ui::App *ui;
-    EntityManager m_entityManager;
+    Expense* m_expense;
+    std::shared_ptr<EntityManager> m_entityManager;
 };
 #endif // APP_H
