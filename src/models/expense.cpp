@@ -28,6 +28,18 @@ QVariant Expense::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+QVariant Expense::headerData(
+    int section,
+    Qt::Orientation orientation,
+    int role = Qt::DisplayRole
+) const {
+    if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
+        return m_fields[section];
+    }
+
+    return QVariant();
+}
+
 QString Expense::name() {
     return m_name;
 }

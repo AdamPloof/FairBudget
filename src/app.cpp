@@ -26,6 +26,8 @@ void App::run() {
     ExpenseRepository expenseRepo = ExpenseRepository(m_entityManager);
     m_expense = new Expense();
     expenseRepo.fetchRecords(m_expense);
+    ui->expenseTbl->verticalHeader()->setVisible(false);
+    ui->expenseTbl->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->expenseTbl->setModel(m_expense);
 }
 
