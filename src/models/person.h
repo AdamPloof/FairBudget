@@ -1,32 +1,23 @@
 #ifndef PERSON_H
 #define PERSON_H
 
-#include <QAbstractTableModel>
 #include <QString>
 #include <QList>
+#include <vector>
 #include "model_interface.h"
 
-class Person : public QAbstractTableModel, public ModelInterface {
-    Q_OBJECT
+class Person : public ModelInterface {
+public:
+    Person();
+    QString name() const override;
+    std::vector<QString> fields() const override;
+    void setData(QString field, QString val) override;
+    QList<QString> getData() const override;
 
-    using PersonRow = QList<QString>;
-
-    public:
-        explicit Person(QObject *parent = nullptr);
-        // ~Person();
-
-        int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-        int columnCount(const QModelIndex &parent = QModelIndex()) const override;
-        QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-        QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
-        QString name() override;
-        std::vector<QString> fields() override;
-        void addRow(PersonRow row) override;
-
-    private:
-        QList<PersonRow> m_rows;
-        QString m_name;
-        std::vector<QString> m_fields;
+private:
+    int m_id;
+    QString m_name;
+    int m_income;
 };
 
 #endif // PERSON_H

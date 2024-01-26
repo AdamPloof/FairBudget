@@ -5,8 +5,8 @@
 #include <memory>
 #include "services/entity_manager.h"
 #include "services/table_formatter.h"
-#include "models/expense.h"
-#include "models/person.h"
+#include "widgets/expense_table.h"
+#include "widgets/person_table.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -34,8 +34,8 @@ private:
 
     Ui::App *ui;
     TableFormatter* m_formatter;
-    Expense* m_expense;
-    Person* m_person;
+    ExpenseTable* m_expense;
+    PersonTable* m_person;
     std::shared_ptr<EntityManager> m_entityManager;
 };
 #endif // APP_H

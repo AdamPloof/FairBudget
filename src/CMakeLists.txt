@@ -25,12 +25,15 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(FairBudget
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        models/expense.h models/expense.cpp
-        models/person.h models/person.cpp
-        models/model_interface.h
         services/entity_manager.h services/entity_manager.cpp
         services/table_formatter.h services/table_formatter.cpp
-        repositories/entity_repository.h repositories/entity_repository.cpp
+        widgets/table_widget_interface.h
+        widgets/expense_table.h widgets/expense_table.cpp
+        widgets/person_table.h widgets/person_table.cpp
+        models/model_interface.h
+        models/expense.h models/expense.cpp
+        models/person.h models/person.cpp
+        repositories/entity_repository.h
         repositories/expense_repository.h repositories/expense_repository.cpp
         repositories/person_repository.h repositories/person_repository.cpp
     )

@@ -9,22 +9,19 @@
 ExpenseRepository::ExpenseRepository(std::shared_ptr<EntityManager> em)
     : EntityRepository(em) {}
 
-void ExpenseRepository::fetchRecords(ModelInterface* model) {
-    using ExpenseLine = QList<QString>;
-
+void ExpenseRepository::fetchRecords(ModelInterface* model, ModelContainer* outContainer) {
     EntityQueryParams params;
     params.entityName = model->name();
     params.fields = model->fields();
     QSqlQuery query = m_entityManager->fetchRecords(params);
 
     while (query.next()) {
-        ExpenseLine row;
+        std::shared_ptr<Expense> e = std::make_shared<Expense>(Expense());
+        outContainer->push_back(e);
         for (QString field : params.fields) {
             QString val = query.value(field).toString();
-            row.push_back(val);
-            qDebug() << val;
+            outContainer->back()->setData(field, val);
+            // qDebug() << val;
         }
-
-        model->addRow(row);
     }
 }

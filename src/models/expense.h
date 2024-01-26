@@ -1,32 +1,20 @@
 #ifndef EXPENSE_H
 #define EXPENSE_H
 
-#include <QAbstractTableModel>
-#include <QString>
-#include <QList>
 #include "model_interface.h"
 
-class Expense : public QAbstractTableModel, public ModelInterface {
-    Q_OBJECT
+class Expense : public ModelInterface {
+public:
+    Expense();
+    QString name() const override;
+    std::vector<QString> fields() const override;
+    void setData(QString field, QString val) override;
+    QList<QString> getData() const override;
 
-    using ExpenseLine = QList<QString>;
-
-    public:
-        explicit Expense(QObject *parent = nullptr);
-        // ~Expense();
-
-        int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-        int columnCount(const QModelIndex &parent = QModelIndex()) const override;
-        QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-        QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
-        QString name() override;
-        std::vector<QString> fields() override;
-        void addRow(ExpenseLine row) override;
-
-    private:
-        QList<ExpenseLine> m_expenseLines;
-        QString m_name;
-        std::vector<QString> m_fields;
+private:
+    int m_id;
+    QString m_description;
+    int m_amount;
 };
 
 #endif // EXPENSE_H

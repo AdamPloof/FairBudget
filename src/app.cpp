@@ -4,10 +4,13 @@
 #include <QTableView>
 
 #include "app.h"
+#include "repositories/entity_repository.h"
 #include "repositories/expense_repository.h"
 #include "repositories/person_repository.h"
-#include "models/expense.h"
 #include "models/person.h"
+
+#include "widgets/expense_table.h"
+#include "widgets/person_table.h"
 #include "./ui_app.h"
 
 App::App(std::shared_ptr<EntityManager> em, QWidget *parent)
@@ -41,16 +44,34 @@ void App::setFormatter(TableFormatter* formatter) {
 
 void App::loadTables() {
     ExpenseRepository expenseRepo = ExpenseRepository(m_entityManager);
-    m_expense = new Expense();
-    expenseRepo.fetchRecords(m_expense);
+    EntityRepository::ModelContainer expenses;
+
+    // TODO: having to create a dummy model is silly. Fix this
+    Expense exp = Expense();
+    expenseRepo.fetchRecords(&exp, &expenses);
+
+    m_expense = new ExpenseTable();
+    for (auto expenseRow : expenses) {
+        m_expense->addRow(expenseRow);
+    }
+
     ui->expenseTbl->setModel(m_expense);
     formatTable(ui->expenseTbl);
+    
+    // PersonRepository personRepo = PersonRepository(m_entityManager);
+    // EntityRepository::ModelContainer persons;
 
-    PersonRepository personRepo = PersonRepository(m_entityManager);
-    m_person = new Person();
-    personRepo.fetchRecords(m_person);
-    ui->personTbl->setModel(m_person);
-    formatTable(ui->personTbl);
+    // // TODO: having to create a dummy model is silly. Fix this
+    // Person person = Person();
+    // personRepo.fetchRecords(&person, &persons);
+
+    // m_person = new PersonTable();
+    // for (auto personRow : persons) {
+    //     m_person->addRow(personRow);
+    // }
+
+    // ui->personTbl->setModel(m_person);
+    // formatTable(ui->personTbl);
 }
 
 void App::formatTable(QTableView* tbl) {

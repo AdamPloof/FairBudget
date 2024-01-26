@@ -7,9 +7,10 @@
 
 class ModelInterface {
 public:
-    virtual QString name() = 0;
-    virtual std::vector<QString> fields() = 0;
-    virtual void addRow(QList<QString>) = 0;
+    virtual QString name() const = 0;
+    virtual std::vector<QString> fields() const = 0;
+    virtual void setData(QString field, QString val) = 0;
+    virtual QList<QString> getData() const = 0;
 };
 
 #endif // MODEL_INTERFACE_H

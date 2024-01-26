@@ -1,25 +1,25 @@
-#include "person.h"
+#include "person_table.h"
 #include <vector>
 
-// Person::Person(QObject *parent, QSqlDatabase &db) : 
+// PersonTable::Person(QObject *parent, QSqlDatabase &db) : 
 //     QSqlTableModel(parent, db)
 // {
 
 // }
 
-Person::Person(QObject *parent) : QAbstractTableModel(parent), m_name("person") {
+PersonTable::PersonTable(QObject *parent) : QAbstractTableModel(parent), m_name("person") {
     m_fields = std::vector<QString> {"id", "name", "income"};
 };
 
-int Person::rowCount(const QModelIndex &parent) const {
+int PersonTable::rowCount(const QModelIndex &parent) const {
     return m_rows.size();
 }
 
-int Person::columnCount(const QModelIndex &parent) const {
+int PersonTable::columnCount(const QModelIndex &parent) const {
     return m_fields.size();
 }
 
-QVariant Person::data(const QModelIndex &index, int role) const
+QVariant PersonTable::data(const QModelIndex &index, int role) const
 {
     if (role == Qt::DisplayRole && m_rows.size() > 0) {
        return m_rows[index.row()][index.column()];
@@ -28,7 +28,7 @@ QVariant Person::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-QVariant Person::headerData(
+QVariant PersonTable::headerData(
     int section,
     Qt::Orientation orientation,
     int role = Qt::DisplayRole
@@ -40,14 +40,14 @@ QVariant Person::headerData(
     return QVariant();
 }
 
-QString Person::name() {
+QString PersonTable::name() {
     return m_name;
 }
 
-std::vector<QString> Person::fields() {
+std::vector<QString> PersonTable::fields() {
     return m_fields;
 }
 
-void Person::addRow(PersonRow row) {
+void PersonTable::addRow(PersonRow row) {
     m_rows.push_back(row);
 }

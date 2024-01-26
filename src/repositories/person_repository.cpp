@@ -1,5 +1,6 @@
 #include <QAbstractTableModel>
 #include <QSqlQuery>
+#include <memory>
 
 #include "person_repository.h"
 #include "../services/entity_manager.h"
@@ -9,22 +10,22 @@
 PersonRepository::PersonRepository(std::shared_ptr<EntityManager> em)
     : EntityRepository(em) {}
 
-void PersonRepository::fetchRecords(ModelInterface* model) {
-    using PersonRow = QList<QString>;
-
+void PersonRepository::fetchRecords(
+    ModelInterface* model,
+    ModelContainer* outContainer
+) {
     EntityQueryParams params;
     params.entityName = model->name();
     params.fields = model->fields();
     QSqlQuery query = m_entityManager->fetchRecords(params);
 
     while (query.next()) {
-        PersonRow row;
+        std::shared_ptr<Person> p = std::make_shared<Person>(Person());
+        outContainer->push_back(p);
         for (QString field : params.fields) {
             QString val = query.value(field).toString();
-            row.push_back(val);
+            outContainer->back()->setData(field, val);
             // qDebug() << val;
         }
-
-        model->addRow(row);
     }
 }
