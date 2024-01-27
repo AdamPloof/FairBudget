@@ -16,10 +16,7 @@ public:
     EntityRepository(std::shared_ptr<EntityManager> em);
     // ~EntityManager();
 
-    virtual void fetchRecords(
-        ModelInterface* model,
-        ModelContainer* outContainer
-    ) = 0;
+    virtual void fetchRecords(ModelContainer* outContainer) = 0;
 
 protected:
     std::shared_ptr<EntityManager> m_entityManager;

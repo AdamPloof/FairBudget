@@ -1,4 +1,5 @@
 #include "person_table.h"
+#include "../models/person.h"
 #include <vector>
 
 // PersonTable::Person(QObject *parent, QSqlDatabase &db) : 
@@ -16,17 +17,13 @@ int PersonTable::rowCount(const QModelIndex &parent) const {
 }
 
 int PersonTable::columnCount(const QModelIndex &parent) const {
-        if (m_persons.size() == 0) {
-        return 0;
-    }
-
-    return m_persons.at(0)->fields().size();
+    return Person::fields.size();
 }
 
 QVariant PersonTable::data(const QModelIndex &index, int role) const
 {
     if (role == Qt::DisplayRole && m_persons.size() > 0) {
-       return m_persons.at(index.row())->getData();
+       return m_persons.at(index.row())->getData(index.column());
     }
 
     return QVariant();
@@ -37,12 +34,8 @@ QVariant PersonTable::headerData(
     Qt::Orientation orientation,
     int role = Qt::DisplayRole
 ) const {
-    if (m_persons.size() == 0) {
-        return QVariant();
-    }
-
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
-        return m_persons[0]->fields()[section];
+        return Person::fields[section];
     }
 
     return QVariant();

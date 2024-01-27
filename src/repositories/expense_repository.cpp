@@ -9,10 +9,10 @@
 ExpenseRepository::ExpenseRepository(std::shared_ptr<EntityManager> em)
     : EntityRepository(em) {}
 
-void ExpenseRepository::fetchRecords(ModelInterface* model, ModelContainer* outContainer) {
+void ExpenseRepository::fetchRecords(ModelContainer* outContainer) {
     EntityQueryParams params;
-    params.entityName = model->name();
-    params.fields = model->fields();
+    params.entityName = Expense::name;
+    params.fields = Expense::fields;
     QSqlQuery query = m_entityManager->fetchRecords(params);
 
     while (query.next()) {

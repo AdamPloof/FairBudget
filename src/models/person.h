@@ -8,17 +8,18 @@
 
 class Person : public ModelInterface {
 public:
+    static QString name;
+    static std::vector<QString> fields;
+
     Person();
-    QString name() const override;
-    std::vector<QString> fields() const override;
     void setData(QString field, QString val) override;
     QList<QString> getData() const override;
+    QString getData(int idx) const override;
 
 private:
     QString m_id;
     QString m_name;
     QString m_income;
-    std::vector<QString> m_fields;
 };
 
 #endif // PERSON_H

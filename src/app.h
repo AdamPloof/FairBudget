@@ -34,8 +34,8 @@ private:
 
     Ui::App *ui;
     TableFormatter* m_formatter;
-    ExpenseTable* m_expense;
-    PersonTable* m_person;
+    ExpenseTable* m_expenseTbl;
+    PersonTable* m_personTbl;
     std::shared_ptr<EntityManager> m_entityManager;
 };
 #endif // APP_H

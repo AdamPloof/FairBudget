@@ -25,8 +25,8 @@ App::App(std::shared_ptr<EntityManager> em, QWidget *parent)
 App::~App()
 {
     delete ui;
-    delete m_expense;
-    delete m_person;
+    delete m_expenseTbl;
+    delete m_personTbl;
 }
 
 void App::run() {
@@ -46,32 +46,26 @@ void App::loadTables() {
     ExpenseRepository expenseRepo = ExpenseRepository(m_entityManager);
     EntityRepository::ModelContainer expenses;
 
-    // TODO: having to create a dummy model is silly. Fix this
-    Expense exp = Expense();
-    expenseRepo.fetchRecords(&exp, &expenses);
-
-    m_expense = new ExpenseTable();
+    expenseRepo.fetchRecords(&expenses);
+    m_expenseTbl = new ExpenseTable();
     for (auto expenseRow : expenses) {
-        m_expense->addRow(expenseRow);
+        m_expenseTbl->addRow(expenseRow);
     }
 
-    ui->expenseTbl->setModel(m_expense);
+    ui->expenseTbl->setModel(m_expenseTbl);
     formatTable(ui->expenseTbl);
     
-    // PersonRepository personRepo = PersonRepository(m_entityManager);
-    // EntityRepository::ModelContainer persons;
+    PersonRepository personRepo = PersonRepository(m_entityManager);
+    EntityRepository::ModelContainer persons;
 
-    // // TODO: having to create a dummy model is silly. Fix this
-    // Person person = Person();
-    // personRepo.fetchRecords(&person, &persons);
+    personRepo.fetchRecords(&persons);
+    m_personTbl = new PersonTable();
+    for (auto personRow : persons) {
+        m_personTbl->addRow(personRow);
+    }
 
-    // m_person = new PersonTable();
-    // for (auto personRow : persons) {
-    //     m_person->addRow(personRow);
-    // }
-
-    // ui->personTbl->setModel(m_person);
-    // formatTable(ui->personTbl);
+    ui->personTbl->setModel(m_personTbl);
+    formatTable(ui->personTbl);
 }
 
 void App::formatTable(QTableView* tbl) {

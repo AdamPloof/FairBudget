@@ -10,13 +10,10 @@
 PersonRepository::PersonRepository(std::shared_ptr<EntityManager> em)
     : EntityRepository(em) {}
 
-void PersonRepository::fetchRecords(
-    ModelInterface* model,
-    ModelContainer* outContainer
-) {
+void PersonRepository::fetchRecords(ModelContainer* outContainer) {
     EntityQueryParams params;
-    params.entityName = model->name();
-    params.fields = model->fields();
+    params.entityName = Person::name;
+    params.fields = Person::fields;
     QSqlQuery query = m_entityManager->fetchRecords(params);
 
     while (query.next()) {

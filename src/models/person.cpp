@@ -4,17 +4,10 @@
 
 #include "person.h"
 
-Person::Person() : m_fields {"id", "name", "income"} {
+QString Person::name = "person";
+std::vector<QString> Person::fields = {"id", "name", "income"};
 
-}
-
-QString Person::name() const {
-    return "person";
-}
-
-std::vector<QString> Person::fields() const {
-    return m_fields;
-}
+Person::Person() {}
 
 void Person::setData(QString field, QString val) {
     if (field == "id") {
@@ -30,6 +23,22 @@ void Person::setData(QString field, QString val) {
 
 QList<QString> Person::getData() const {
     QList<QString> data = {m_id, m_name, m_income};
+
+    return data;
+}
+
+QString Person::getData(int idx) const {
+    QString field = Person::fields[idx];
+    QString data;
+    if (field == "id") {
+        data = m_id;
+    } else if (field == "name") {
+        data = m_name;
+    } else if (field == "income") {
+        data = m_income;
+    } else {
+        throw std::invalid_argument("Invalid field for Expense");
+    }
 
     return data;
 }

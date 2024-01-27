@@ -10,10 +10,7 @@ class PersonRepository : public EntityRepository {
 public:
     PersonRepository(std::shared_ptr<EntityManager> em);
 
-    void fetchRecords(
-        ModelInterface* model,
-        ModelContainer* outContainer
-    ) override;
+    void fetchRecords(ModelContainer* outContainer) override;
 };
 
 #endif // PERSON_REPOSITORY_H

@@ -1,4 +1,5 @@
 #include "expense_table.h"
+#include "../models/expense.h"
 #include <vector>
 
 // ExpenseTable::Expense(QObject *parent, QSqlDatabase &db) : 
@@ -16,18 +17,13 @@ int ExpenseTable::rowCount(const QModelIndex &parent) const {
 }
 
 int ExpenseTable::columnCount(const QModelIndex &parent) const {
-    if (m_expenses.size() == 0) {
-        return 0;
-    }
-
-    return m_expenses.at(0)->fields().size();
+    return Expense::fields.size();
 }
 
 QVariant ExpenseTable::data(const QModelIndex &index, int role) const
 {
     if (role == Qt::DisplayRole && m_expenses.size() > 0) {
-        // TODO: get the right column
-       return m_expenses.at(index.row())->getData();
+       return m_expenses.at(index.row())->getData(index.column());
     }
 
     return QVariant();
@@ -38,12 +34,8 @@ QVariant ExpenseTable::headerData(
     Qt::Orientation orientation,
     int role = Qt::DisplayRole
 ) const {
-    if (m_expenses.size() == 0) {
-        return QVariant();
-    }
-
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
-        return m_expenses[0]->fields()[section];
+        return Expense::fields[section];
     }
 
     return QVariant();
