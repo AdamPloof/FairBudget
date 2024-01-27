@@ -15,9 +15,10 @@ public:
     QList<QString> getData() const override;
 
 private:
-    int m_id;
+    QString m_id;
     QString m_name;
-    int m_income;
+    QString m_income;
+    std::vector<QString> m_fields;
 };
 
 #endif // PERSON_H

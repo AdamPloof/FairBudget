@@ -13,7 +13,7 @@ class ExpenseTable : public QAbstractTableModel, public TableWidgetInterface {
 
     public:
         explicit ExpenseTable(QObject *parent = nullptr);
-        // ~Expense();
+        // ~ExpenseTable();
 
         int rowCount(const QModelIndex &parent = QModelIndex()) const override;
         int columnCount(const QModelIndex &parent = QModelIndex()) const override;

@@ -12,9 +12,11 @@ public:
     QList<QString> getData() const override;
 
 private:
-    int m_id;
+    // TODO, it would be nice to use the actual data types as they are in the db
+    QString m_id;
     QString m_description;
-    int m_amount;
+    QString m_amount;
+    std::vector<QString> m_fields;
 };
 
 #endif // EXPENSE_H

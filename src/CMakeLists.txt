@@ -33,7 +33,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         models/model_interface.h
         models/expense.h models/expense.cpp
         models/person.h models/person.cpp
-        repositories/entity_repository.h
+        repositories/entity_repository.h repositories/entity_repository.cpp
         repositories/expense_repository.h repositories/expense_repository.cpp
         repositories/person_repository.h repositories/person_repository.cpp
     )

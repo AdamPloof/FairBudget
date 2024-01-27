@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include "../services/entity_manager.h"
 
 class EntityManager;
 class QAbstractTableModel;
