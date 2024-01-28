@@ -7,10 +7,8 @@
 #include "repositories/entity_repository.h"
 #include "repositories/expense_repository.h"
 #include "repositories/person_repository.h"
-#include "models/person.h"
+#include "repositories/payment_repository.h"
 
-#include "widgets/expense_table.h"
-#include "widgets/person_table.h"
 #include "./ui_app.h"
 
 App::App(std::shared_ptr<EntityManager> em, QWidget *parent)
@@ -45,7 +43,6 @@ void App::setFormatter(TableFormatter* formatter) {
 void App::loadTables() {
     ExpenseRepository expenseRepo = ExpenseRepository(m_entityManager);
     EntityRepository::ModelContainer expenses;
-
     expenseRepo.fetchRecords(&expenses);
     m_expenseTbl = new ExpenseTable();
     for (auto expenseRow : expenses) {
@@ -57,7 +54,6 @@ void App::loadTables() {
     
     PersonRepository personRepo = PersonRepository(m_entityManager);
     EntityRepository::ModelContainer persons;
-
     personRepo.fetchRecords(&persons);
     m_personTbl = new PersonTable();
     for (auto personRow : persons) {
@@ -66,6 +62,17 @@ void App::loadTables() {
 
     ui->personTbl->setModel(m_personTbl);
     formatTable(ui->personTbl);
+
+    PaymentRepository paymentRepo = PaymentRepository(m_entityManager);
+    EntityRepository::ModelContainer payments;
+    paymentRepo.fetchRecords(&payments);
+    m_paymentTbl = new PaymentTable();
+    for (auto paymentRow : payments) {
+        m_paymentTbl->addRow(paymentRow);
+    }
+
+    ui->paymentTbl->setModel(m_paymentTbl);
+    formatTable(ui->paymentTbl);
 }
 
 void App::formatTable(QTableView* tbl) {

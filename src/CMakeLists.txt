@@ -30,12 +30,15 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         widgets/table_widget_interface.h
         widgets/expense_table.h widgets/expense_table.cpp
         widgets/person_table.h widgets/person_table.cpp
+        widgets/payment_table.h widgets/payment_table.cpp
         models/model_interface.h
         models/expense.h models/expense.cpp
         models/person.h models/person.cpp
+        models/payment.h models/payment.cpp
         repositories/entity_repository.h repositories/entity_repository.cpp
         repositories/expense_repository.h repositories/expense_repository.cpp
         repositories/person_repository.h repositories/person_repository.cpp
+        repositories/payment_repository.h repositories/payment_repository.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET FairBudget APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

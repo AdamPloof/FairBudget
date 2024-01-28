@@ -7,6 +7,7 @@
 #include "services/table_formatter.h"
 #include "widgets/expense_table.h"
 #include "widgets/person_table.h"
+#include "widgets/payment_table.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -36,6 +37,7 @@ private:
     TableFormatter* m_formatter;
     ExpenseTable* m_expenseTbl;
     PersonTable* m_personTbl;
+    PaymentTable* m_paymentTbl;
     std::shared_ptr<EntityManager> m_entityManager;
 };
 #endif // APP_H

@@ -28,6 +28,12 @@ void EntityManager::closeDb() {
     QSqlDatabase::database().close();
 }
 
+QSqlQuery EntityManager::fetchRecords(QString queryStr) {
+    QSqlQuery query = QSqlQuery(queryStr);
+
+    return query;
+}
+
 QSqlQuery EntityManager::fetchRecords(EntityQueryParams params) {
     QSqlQuery query = QSqlQuery(constructQuery(params));
     // qDebug() << "Fetching record: " << params.entityName;

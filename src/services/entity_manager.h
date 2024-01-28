@@ -21,6 +21,7 @@ public:
     static QSqlDatabase& openDb();
     static void closeDb();
 
+    QSqlQuery fetchRecords(QString queryStr);
     QSqlQuery fetchRecords(EntityQueryParams params);
 
 private:
