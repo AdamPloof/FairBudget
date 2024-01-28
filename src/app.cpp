@@ -81,5 +81,8 @@ void App::formatTable(QTableView* tbl) {
     }
 
     tbl->verticalHeader()->setVisible(false);
-    tbl->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    for (int col = 1; col < tbl->model()->columnCount(); col++) {
+        tbl->horizontalHeader()->setSectionResizeMode(col, QHeaderView::Stretch);
+    }
 }
