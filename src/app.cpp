@@ -4,6 +4,7 @@
 #include <QTableView>
 
 #include "app.h"
+#include "services/persistence_manager.h"
 #include "repositories/entity_repository.h"
 #include "repositories/expense_repository.h"
 #include "repositories/person_repository.h"
@@ -15,6 +16,10 @@ App::App(std::shared_ptr<EntityManager> em, QWidget *parent)
     : QMainWindow(parent),
     m_entityManager(em),
     m_formatter(nullptr),
+    m_expenseTbl(nullptr),
+    m_personTbl(nullptr),
+    m_paymentTbl(nullptr),
+    m_persistenceManager(PersistenceManager()),
     ui(new Ui::App)
 {
     ui->setupUi(this);
@@ -44,7 +49,7 @@ void App::loadTables() {
     ExpenseRepository expenseRepo = ExpenseRepository(m_entityManager);
     EntityRepository::ModelContainer expenses;
     expenseRepo.fetchRecords(&expenses);
-    m_expenseTbl = new ExpenseTable();
+    m_expenseTbl = new ExpenseTable(&m_persistenceManager);
     for (auto expenseRow : expenses) {
         m_expenseTbl->addRow(expenseRow);
     }

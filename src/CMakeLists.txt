@@ -26,6 +26,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         services/entity_manager.h services/entity_manager.cpp
+        services/persistence_manager.h services/persistence_manager.cpp
         services/table_formatter.h services/table_formatter.cpp
         widgets/table_widget_interface.h
         widgets/expense_table.h widgets/expense_table.cpp

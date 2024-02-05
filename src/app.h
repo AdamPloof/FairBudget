@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <memory>
 #include "services/entity_manager.h"
+#include "services/persistence_manager.h"
 #include "services/table_formatter.h"
 #include "widgets/expense_table.h"
 #include "widgets/person_table.h"
@@ -39,5 +40,6 @@ private:
     PersonTable* m_personTbl;
     PaymentTable* m_paymentTbl;
     std::shared_ptr<EntityManager> m_entityManager;
+    PersistenceManager m_persistenceManager;
 };
 #endif // APP_H
