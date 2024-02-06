@@ -1,28 +1,26 @@
 #ifndef PERSISTENCE_MANAGER_H
 #define PERSISTENCE_MANAGER_H
 
-#include <QObject>
-#include <QModelIndex>
-#include <QList>
 #include <vector>
 #include <unordered_map>
-#include <string>
 #include <memory>
+#include <string>
+
 #include "entity_manager.h"
 #include "../models/model_interface.h"
 
 struct DeletedModel {
-    std::string modelType;
-    int id;
+    ModelType modelType;
+    std::string id;
 };
 
-typedef QString model_type;
+typedef std::unordered_map<std::string, std::shared_ptr<ModelInterface>> Changeset;
+typedef std::unordered_map<std::string, DeletedModel> DeleteQueue;
 
 class PersistenceManager : public QObject {
-    Q_OBJECT
 
 public:
-    explicit PersistenceManager(QObject *parent = nullptr);
+    explicit PersistenceManager();
     void setEntityManager(std::shared_ptr<EntityManager> em);
     void persist(std::shared_ptr<ModelInterface> model);
     void update(std::shared_ptr<ModelInterface> model);
@@ -33,9 +31,9 @@ private:
     void execUpdate();
 
     std::shared_ptr<EntityManager> m_em;
-    std::unordered_map<model_type, std::vector<ModelInterface>> m_inserts;
-    std::unordered_map<model_type, std::vector<ModelInterface>> m_updates;
-    std::unordered_map<model_type, std::vector<DeletedModel>> m_deletes;
+    std::unordered_map<ModelType, Changeset> m_inserts;
+    std::unordered_map<ModelType, Changeset> m_updates;
+    std::unordered_map<ModelType, DeleteQueue> m_deletes;
 };
 
 #endif // PERSISTENCE_MANAGER_H

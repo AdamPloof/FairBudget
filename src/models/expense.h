@@ -9,7 +9,9 @@ public:
     static std::vector<QString> fields;
 
     Expense();
+    ModelType modelType() const override;
     void setData(QString field, QString val) override;
+    const QString getId() const override;
     QList<QString> getData() const override;
     QString getData(int idx) const override;
 

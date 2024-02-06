@@ -9,6 +9,10 @@ std::vector<QString> Payment::fields = {"id", "expense", "paid_by", "amount"};
 
 Payment::Payment() {}
 
+ModelType Payment::modelType() const {
+    return ModelType::PAYMENT;
+}
+
 void Payment::setData(QString field, QString val) {
     if (field == "id") {
         m_id = val;
@@ -21,6 +25,10 @@ void Payment::setData(QString field, QString val) {
     } else {
         throw std::invalid_argument("Invalid field for Expense");
     }
+}
+
+const QString Payment::getId() const {
+    return m_id;
 }
 
 QList<QString> Payment::getData() const {

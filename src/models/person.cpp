@@ -9,6 +9,10 @@ std::vector<QString> Person::fields = {"id", "name", "income"};
 
 Person::Person() {}
 
+ModelType Person::modelType() const {
+    return ModelType::PERSON;
+}
+
 void Person::setData(QString field, QString val) {
     if (field == "id") {
         m_id = val;
@@ -19,6 +23,10 @@ void Person::setData(QString field, QString val) {
     } else {
         throw std::invalid_argument("Invalid field for Person");
     }
+}
+
+const QString Person::getId() const {
+    return m_id;
 }
 
 QList<QString> Person::getData() const {
