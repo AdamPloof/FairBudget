@@ -41,6 +41,10 @@ QSqlQuery EntityManager::fetchRecords(EntityQueryParams params) {
     return query;
 }
 
+void EntityManager::runQuery(QString queryStr) {
+    
+}
+
 QString EntityManager::constructQuery(EntityQueryParams& params) {
     std::stringstream q;
     q <<  "SELECT ";

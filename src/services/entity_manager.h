@@ -23,6 +23,7 @@ public:
 
     QSqlQuery fetchRecords(QString queryStr);
     QSqlQuery fetchRecords(EntityQueryParams params);
+    void runQuery(QString queryStr);
 
 private:
     QString constructQuery(EntityQueryParams& params);

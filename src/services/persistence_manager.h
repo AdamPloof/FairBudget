@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <memory>
 #include <string>
+#include <sstream>
+#include <QString>
 
 #include "entity_manager.h"
 #include "../models/model_interface.h"
@@ -28,7 +30,12 @@ public:
     void flush();
 
 private:
-    void execUpdate();
+    void insertRecords(ModelType mt, Changeset changeset);
+    void updateRecords(ModelType mt, Changeset changeset);
+    void deleteRecords(ModelType mt, DeleteQueue deleteQueue);
+    std::string modelFields(std::vector<QString> fields);
+    std::string modelValues(std::shared_ptr<ModelInterface> model);
+    bool isNumber(QString s);
 
     std::shared_ptr<EntityManager> m_em;
     std::unordered_map<ModelType, Changeset> m_inserts;

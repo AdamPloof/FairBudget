@@ -1,13 +1,19 @@
 #include <QList>
 #include <QString>
 #include <vector>
+#include <sstream>
+#include <exception>
 
+#include "../models/expense.h"
+#include "../models/person.h"
+#include "../models/payment.h"
 #include "persistence_manager.h"
 
 PersistenceManager::PersistenceManager() {
     
 }
 
+// TODO: Look into adding entity manager in constructor
 void PersistenceManager::setEntityManager(std::shared_ptr<EntityManager> em) {
     m_em = em;
 }
@@ -45,6 +51,78 @@ void PersistenceManager::flush() {
     
 }
 
-void PersistenceManager::execUpdate() {
-    
+void PersistenceManager::insertRecords(ModelType mt, Changeset changeset) {
+    std::string modelName;
+    std::vector<QString> fields;
+    switch (mt) {
+        case ModelType::EXPENSE:
+            modelName = Expense::name.toStdString();
+            fields = Expense::fields;
+            break;
+        case ModelType::PERSON:
+            modelName = Person::name.toStdString();
+            fields = Person::fields;
+            break;
+        case ModelType::PAYMENT:
+            modelName = Payment::name.toStdString();
+            fields = Payment::fields;
+            break;
+        default:
+            throw std::invalid_argument("Unknown ModelType provided for insert");
+    }
+
+    std::stringstream query;
+    query << "INSERT " << modelFields(Expense::fields);
+    query << " INTO " << modelName << "\nVALUES\n";
+
+    // This is bad... SQL injection? Hello!
+    for (auto [id, model] : changeset) {
+        query << modelValues(model);
+    }
+
+    query << ';';
+}
+
+std::string PersistenceManager::modelFields(std::vector<QString> fields) {
+    std::stringstream modelFields;
+    for (QString field : fields) {
+        modelFields << field.toStdString();
+
+        if (field != fields.back()) {
+            modelFields << ", ";
+        }
+    }
+
+    return modelFields.str();
+}
+
+std::string PersistenceManager::modelValues(std::shared_ptr<ModelInterface> model) {
+    std::stringstream values;
+    QList<QString> data = model->getData();
+    for (auto val : data) {
+        values << '(';
+        if (isNumber(val)) {
+            values << val.toStdString();
+        } else {
+            values << "'" << val.toStdString() << "'";
+        }
+
+        if (val != data.last()) {
+            values << ", ";
+        } else {
+            values << ")\n";
+        }
+    }
+
+    return values.str();
+}
+
+bool PersistenceManager::isNumber(QString s) {
+    char* p;
+    strtod(s.toStdString().c_str(), &p);
+    if (*p) {
+        return false;
+    }
+
+    return true;
 }
