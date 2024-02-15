@@ -33,7 +33,6 @@ private:
     void insertRecords(ModelType mt, Changeset changeset);
     void updateRecords(ModelType mt, Changeset changeset);
     void deleteRecords(ModelType mt, DeleteQueue deleteQueue);
-    std::string modelFields(std::vector<QString> fields);
     std::string modelValues(std::shared_ptr<ModelInterface> model);
     bool isNumber(QString s);
 

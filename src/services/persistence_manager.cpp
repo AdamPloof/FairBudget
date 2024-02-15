@@ -1,5 +1,6 @@
 #include <QList>
 #include <QString>
+#include <QVariantList>
 #include <vector>
 #include <sstream>
 #include <exception>
@@ -52,48 +53,29 @@ void PersistenceManager::flush() {
 }
 
 void PersistenceManager::insertRecords(ModelType mt, Changeset changeset) {
-    std::string modelName;
+    QString table;
     std::vector<QString> fields;
     switch (mt) {
         case ModelType::EXPENSE:
-            modelName = Expense::name.toStdString();
+            table = Expense::name;
             fields = Expense::fields;
             break;
         case ModelType::PERSON:
-            modelName = Person::name.toStdString();
+            table = Person::name;
             fields = Person::fields;
             break;
         case ModelType::PAYMENT:
-            modelName = Payment::name.toStdString();
+            table = Payment::name;
             fields = Payment::fields;
             break;
         default:
             throw std::invalid_argument("Unknown ModelType provided for insert");
     }
 
-    std::stringstream query;
-    query << "INSERT " << modelFields(Expense::fields);
-    query << " INTO " << modelName << "\nVALUES\n";
+    // TODO: construct values list from changeset
+    std::vector<QVariantList> values;
 
-    // This is bad... SQL injection? Hello!
-    for (auto [id, model] : changeset) {
-        query << modelValues(model);
-    }
-
-    query << ';';
-}
-
-std::string PersistenceManager::modelFields(std::vector<QString> fields) {
-    std::stringstream modelFields;
-    for (QString field : fields) {
-        modelFields << field.toStdString();
-
-        if (field != fields.back()) {
-            modelFields << ", ";
-        }
-    }
-
-    return modelFields.str();
+    m_em->insertRecords(table, fields, values);
 }
 
 std::string PersistenceManager::modelValues(std::shared_ptr<ModelInterface> model) {
