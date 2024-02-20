@@ -30,10 +30,9 @@ public:
     void flush();
 
 private:
-    void insertRecords(ModelType mt, Changeset changeset);
+    void insertRecords(Changeset changeset);
     void updateRecords(ModelType mt, Changeset changeset);
     void deleteRecords(ModelType mt, DeleteQueue deleteQueue);
-    std::string modelValues(std::shared_ptr<ModelInterface> model);
     bool isNumber(QString s);
 
     std::shared_ptr<EntityManager> m_em;

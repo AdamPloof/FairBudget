@@ -21,7 +21,7 @@ void PaymentRepository::fetchRecords(ModelContainer* outContainer) {
                     FROM payment pay
                     LEFT JOIN person p ON p.id = pay.paid_by
                     LEFT JOIN expense e ON e.id = pay.expense;)";
-    QString queryStr = QString(q);
+    const QString queryStr = QString(q);
     QSqlQuery query = m_entityManager->fetchRecords(queryStr);
 
     while (query.next()) {

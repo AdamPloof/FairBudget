@@ -9,10 +9,12 @@ public:
     static std::vector<QString> fields;
 
     Expense();
+    QString modelName() const override;
     ModelType modelType() const override;
+    std::vector<QString> modelFields() const override;
     void setData(QString field, QString val) override;
     const QString getId() const override;
-    QList<QString> getData() const override;
+    std::vector<ModelFieldValue> getData() const override;
     QString getData(int idx) const override;
 
 private:

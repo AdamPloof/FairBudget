@@ -4,9 +4,11 @@
 #include <QSqlQuery>
 #include <QVariantList>
 #include <vector>
+#include <memory>
 
 class QSqlDatabase;
 class QString;
+class ModelInterface;
 
 struct EntityQueryParams {
     QString entityName;
@@ -21,15 +23,15 @@ public:
 
     static QSqlDatabase& openDb();
     static void closeDb();
-
     QSqlQuery fetchRecords(EntityQueryParams params);
-    void insertRecords(QString table, std::vector<QString> fields, std::vector<QVariantList> values);
+    QSqlQuery fetchRecords(const QString queryStr);
+    void insertRecords(std::shared_ptr<ModelInterface> model);
     void runQuery(QString queryStr);
 
 private:
     QString constructQuery(EntityQueryParams& params);
     std::string joinFields(std::vector<QString> fields);
-    std::string fieldParams(int fieldCount);
+    std::string fieldParams(std::vector<QString> fields);
 };
 
 #endif // ENTITY_MANAGER_H

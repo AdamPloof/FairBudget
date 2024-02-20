@@ -52,51 +52,11 @@ void PersistenceManager::flush() {
     
 }
 
-void PersistenceManager::insertRecords(ModelType mt, Changeset changeset) {
-    QString table;
-    std::vector<QString> fields;
-    switch (mt) {
-        case ModelType::EXPENSE:
-            table = Expense::name;
-            fields = Expense::fields;
-            break;
-        case ModelType::PERSON:
-            table = Person::name;
-            fields = Person::fields;
-            break;
-        case ModelType::PAYMENT:
-            table = Payment::name;
-            fields = Payment::fields;
-            break;
-        default:
-            throw std::invalid_argument("Unknown ModelType provided for insert");
+void PersistenceManager::insertRecords(Changeset changeset) {
+    // TODO: insert multiple model instances in single query.
+    for (auto [id, model] : changeset) {
+        m_em->insertRecords(model);
     }
-
-    // TODO: construct values list from changeset
-    std::vector<QVariantList> values;
-
-    m_em->insertRecords(table, fields, values);
-}
-
-std::string PersistenceManager::modelValues(std::shared_ptr<ModelInterface> model) {
-    std::stringstream values;
-    QList<QString> data = model->getData();
-    for (auto val : data) {
-        values << '(';
-        if (isNumber(val)) {
-            values << val.toStdString();
-        } else {
-            values << "'" << val.toStdString() << "'";
-        }
-
-        if (val != data.last()) {
-            values << ", ";
-        } else {
-            values << ")\n";
-        }
-    }
-
-    return values.str();
 }
 
 bool PersistenceManager::isNumber(QString s) {

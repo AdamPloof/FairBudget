@@ -9,8 +9,16 @@ std::vector<QString> Payment::fields = {"id", "expense", "paid_by", "amount"};
 
 Payment::Payment() {}
 
+QString Payment::modelName() const {
+    return Payment::name;
+}
+
 ModelType Payment::modelType() const {
     return ModelType::PAYMENT;
+}
+
+std::vector<QString> Payment::modelFields() const {
+    return Payment::fields;
 }
 
 void Payment::setData(QString field, QString val) {
@@ -31,8 +39,12 @@ const QString Payment::getId() const {
     return m_id;
 }
 
-QList<QString> Payment::getData() const {
-    QList<QString> data = {m_id, m_expense, m_paidBy, m_amount};
+std::vector<ModelFieldValue> Payment::getData() const {
+    std::vector<ModelFieldValue> data;
+    data.push_back({"id", m_id});
+    data.push_back({"expense", m_expense});
+    data.push_back({"paid_by", m_paidBy});
+    data.push_back({"amount", m_amount});
 
     return data;
 }

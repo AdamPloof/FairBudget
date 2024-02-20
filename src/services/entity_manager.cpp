@@ -1,11 +1,13 @@
 #include <QSqlError>
 #include <QSqlDatabase>
+#include <QSqlQuery>
 #include <QString>
 #include <QDebug>
 #include <sstream>
 #include <cstddef>
 
 #include "entity_manager.h"
+#include "../models/model_interface.h"
 
 EntityManager::EntityManager() {}
 
@@ -35,15 +37,25 @@ QSqlQuery EntityManager::fetchRecords(EntityQueryParams params) {
     return query;
 }
 
-void EntityManager::insertRecords(
-    QString table,
-    std::vector<QString> fields,
-    std::vector<QVariantList> values
-) {
+QSqlQuery EntityManager::fetchRecords(const QString queryStr) {
+    QSqlQuery query = QSqlQuery(queryStr);
+
+    return query;
+}
+
+void EntityManager::insertRecords(std::shared_ptr<ModelInterface> model) {
     std::stringstream query;
-    query << "INSERT " << joinFields(fields);
-    query << " INTO " << table.toStdString() << "\nVALUES\n";
-    query << fieldParams(fields.size());
+    query << "INSERT " << " INTO " << model->modelName().toStdString();
+    query << ' ' << joinFields(model->modelFields()) << "\nVALUES\n";
+    query << fieldParams(model->modelFields());
+    const QString queryStr(query.str().c_str());
+
+    QSqlQuery q;
+    q.prepare(queryStr);
+
+    for (auto fieldValues : model->getData()) {
+        q.bindValue(":" + fieldValues.field, fieldValues.value);
+    }
 }
 
 void EntityManager::runQuery(QString queryStr) {
@@ -74,6 +86,7 @@ QString EntityManager::constructQuery(EntityQueryParams& params) {
 
 std::string EntityManager::joinFields(std::vector<QString> fields) {
     std::stringstream modelFields;
+    modelFields << '(';
     for (QString field : fields) {
         modelFields << field.toStdString();
 
@@ -82,14 +95,19 @@ std::string EntityManager::joinFields(std::vector<QString> fields) {
         }
     }
 
+    modelFields << ')';
+
     return modelFields.str();
 }
 
-std::string EntityManager::fieldParams(int fieldCount) {
+std::string EntityManager::fieldParams(std::vector<QString> fields) {
     std::stringstream params;
     params << '(';
-    for (int i = 0; i < fieldCount; i++) {
-        params << (i != fieldCount - 1 ? "?, " : "?");
+    for (auto field : fields) {
+        params << ":" + field.toStdString();
+        if (field != fields.back()) {
+            params << ", ";
+        }
     }
 
     params << ')';
