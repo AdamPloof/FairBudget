@@ -25,6 +25,8 @@ class ExpenseTable : public QAbstractTableModel, public TableWidgetInterface {
         bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
         void addRow(std::shared_ptr<ModelInterface> row) override;
 
+        bool showIndex;
+
     private:
         QList<std::shared_ptr<ModelInterface>> m_expenses;
         PersistenceManager* m_persistenceManager;

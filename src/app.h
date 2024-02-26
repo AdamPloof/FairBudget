@@ -9,6 +9,7 @@
 #include "widgets/expense_table.h"
 #include "widgets/person_table.h"
 #include "widgets/payment_table.h"
+#include "forms/add_expense_form.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -30,8 +31,12 @@ public:
     void setFormatter(TableFormatter* formatter);
     void loadDb();
 
+private slots:
+    void on_addExpenseBtn_clicked();
+
 private:
     void loadTables();
+    void loadForms();
     void formatTable(QTableView* tbl);
 
     Ui::App *ui;
@@ -39,6 +44,8 @@ private:
     ExpenseTable* m_expenseTbl;
     PersonTable* m_personTbl;
     PaymentTable* m_paymentTbl;
+    AddExpenseForm* m_addExpenseForm;
+
     std::shared_ptr<EntityManager> m_entityManager;
     PersistenceManager m_persistenceManager;
 };

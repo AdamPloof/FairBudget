@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1038</width>
+    <height>838</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -70,10 +70,17 @@
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_5">
-        <item alignment="Qt::AlignBottom">
+        <item>
          <widget class="QLabel" name="paymentLbl">
           <property name="text">
            <string>Payments</string>
+          </property>
+         </widget>
+        </item>
+        <item alignment="Qt::AlignRight">
+         <widget class="QPushButton" name="addPaymentBtn">
+          <property name="text">
+           <string>Add Payment</string>
           </property>
          </widget>
         </item>

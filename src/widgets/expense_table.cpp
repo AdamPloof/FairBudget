@@ -10,7 +10,8 @@
 // }
 
 ExpenseTable::ExpenseTable(PersistenceManager* persistenceManager, QObject *parent) :
-    m_persistenceManager(persistenceManager) {};
+    m_persistenceManager(persistenceManager),
+    showIndex(false) {};
 
 int ExpenseTable::rowCount(const QModelIndex &parent) const {
     return m_expenses.size();
@@ -38,6 +39,10 @@ QVariant ExpenseTable::headerData(
     int role = Qt::DisplayRole
 ) const {
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
+        if (!showIndex && section == 0) {
+            return QVariant();
+        }
+
         return Expense::fields[section];
     }
 
@@ -55,7 +60,9 @@ Qt::ItemFlags ExpenseTable::flags(const QModelIndex &index) const {
 bool ExpenseTable::setData(const QModelIndex &index, const QVariant &value, int role) {
     if (index.isValid() && role == Qt::EditRole) {
         m_expenses.at(index.row())->setData(Expense::fields.at(index.column()), value.toString());
-        m_persistenceManager->update(m_expenses.at(index.row()));
+
+        // TODO: there's a out of bounds index problem in persistence manager with this call
+        // m_persistenceManager->update(m_expenses.at(index.row()));
         emit dataChanged(index, index, {role});
 
         return true;

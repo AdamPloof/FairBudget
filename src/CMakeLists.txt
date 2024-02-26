@@ -40,6 +40,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         repositories/expense_repository.h repositories/expense_repository.cpp
         repositories/person_repository.h repositories/person_repository.cpp
         repositories/payment_repository.h repositories/payment_repository.cpp
+        forms/add_expense_form.h forms/add_expense_form.cpp forms/add_expense_form.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET FairBudget APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

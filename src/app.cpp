@@ -19,6 +19,7 @@ App::App(std::shared_ptr<EntityManager> em, QWidget *parent)
     m_expenseTbl(nullptr),
     m_personTbl(nullptr),
     m_paymentTbl(nullptr),
+    m_addExpenseForm(nullptr),
     m_persistenceManager(PersistenceManager()),
     ui(new Ui::App)
 {
@@ -35,6 +36,7 @@ App::~App()
 void App::run() {
     loadDb();
     loadTables();
+    loadForms();
 }
 
 void App::loadDb() {
@@ -80,6 +82,11 @@ void App::loadTables() {
     formatTable(ui->paymentTbl);
 }
 
+void App::loadForms() {
+    m_addExpenseForm = new AddExpenseForm(this);
+    m_addExpenseForm->setWindowFlag(Qt::Window);
+}
+
 void App::formatTable(QTableView* tbl) {
     if (m_formatter == nullptr) {
         return;
@@ -91,3 +98,8 @@ void App::formatTable(QTableView* tbl) {
         tbl->horizontalHeader()->setSectionResizeMode(col, QHeaderView::Stretch);
     }
 }
+
+void App::on_addExpenseBtn_clicked() {
+    m_addExpenseForm->show();
+}
+
