@@ -10,8 +10,7 @@
 // }
 
 ExpenseTable::ExpenseTable(PersistenceManager* persistenceManager, QObject *parent) :
-    m_persistenceManager(persistenceManager),
-    showIndex(false) {};
+    m_persistenceManager(persistenceManager) {};
 
 int ExpenseTable::rowCount(const QModelIndex &parent) const {
     return m_expenses.size();
@@ -39,10 +38,6 @@ QVariant ExpenseTable::headerData(
     int role = Qt::DisplayRole
 ) const {
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
-        if (!showIndex && section == 0) {
-            return QVariant();
-        }
-
         return Expense::fields[section];
     }
 
