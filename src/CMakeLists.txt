@@ -27,6 +27,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         services/entity_manager.h services/entity_manager.cpp
         services/table_formatter.h services/table_formatter.cpp
+        entities/entity_interface.h 
+        entities/expense.h entities/expense.cpp
+        forms/add_expense_form.h forms/add_expense_form.cpp forms/add_expense_form.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET FairBudget APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

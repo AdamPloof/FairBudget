@@ -12,11 +12,15 @@ App::App(std::shared_ptr<EntityManager> em, QWidget *parent)
     ui(new Ui::App)
 {
     ui->setupUi(this);
+
+    m_addExpenseForm = new AddExpenseForm(this);
+    m_addExpenseForm->setWindowFlag(Qt::Window);
 }
 
 App::~App()
 {
     delete ui;
+    delete m_addExpenseForm;
 }
 
 void App::run() {
@@ -44,6 +48,6 @@ void App::formatTable(QTableView* tbl) {
 }
 
 void App::on_addExpenseBtn_clicked() {
-    
+    m_addExpenseForm->show();
 }
 

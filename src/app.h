@@ -5,6 +5,7 @@
 #include <memory>
 #include "services/entity_manager.h"
 #include "services/table_formatter.h"
+#include "forms/add_expense_form.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -34,7 +35,8 @@ private:
     void loadForms();
     void formatTable(QTableView* tbl);
 
-    Ui::App *ui;
+    Ui::App* ui;
+    AddExpenseForm* m_addExpenseForm;
     TableFormatter* m_formatter;
 
     std::shared_ptr<EntityManager> m_entityManager;
