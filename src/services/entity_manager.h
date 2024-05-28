@@ -9,11 +9,7 @@
 class QSqlDatabase;
 class QString;
 class ModelInterface;
-
-struct EntityQueryParams {
-    QString entityName;
-    std::vector<QString> fields;
-};
+class EntityInterface;
 
 class EntityManager {
 
@@ -23,15 +19,10 @@ public:
 
     static QSqlDatabase& openDb();
     static void closeDb();
-    QSqlQuery fetchRecords(EntityQueryParams params);
-    QSqlQuery fetchRecords(const QString queryStr);
-    void insertRecords(std::shared_ptr<ModelInterface> model);
-    void runQuery(QString queryStr);
 
-private:
-    QString constructQuery(EntityQueryParams& params);
-    std::string joinFields(std::vector<QString> fields);
-    std::string fieldParams(std::vector<QString> fields);
+    void update(std::shared_ptr<EntityInterface> entity);
+
+    bool isReady();
 };
 
 #endif // ENTITY_MANAGER_H

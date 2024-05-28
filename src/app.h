@@ -4,12 +4,7 @@
 #include <QMainWindow>
 #include <memory>
 #include "services/entity_manager.h"
-#include "services/persistence_manager.h"
 #include "services/table_formatter.h"
-#include "widgets/expense_table.h"
-#include "widgets/person_table.h"
-#include "widgets/payment_table.h"
-#include "forms/add_expense_form.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -41,12 +36,8 @@ private:
 
     Ui::App *ui;
     TableFormatter* m_formatter;
-    ExpenseTable* m_expenseTbl;
-    PersonTable* m_personTbl;
-    PaymentTable* m_paymentTbl;
-    AddExpenseForm* m_addExpenseForm;
 
     std::shared_ptr<EntityManager> m_entityManager;
-    PersistenceManager m_persistenceManager;
 };
+
 #endif // APP_H

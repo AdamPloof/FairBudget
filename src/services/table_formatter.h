@@ -10,4 +10,4 @@ public:
     void format(QTableView* table);
 };
 
-#endif // TABLE_FORMATTER
+#endif // TABLE_FORMATTER_H

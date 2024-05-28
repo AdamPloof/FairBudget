@@ -5,14 +5,15 @@
 #include <QDebug>
 #include <sstream>
 #include <cstddef>
+#include <vector>
 
 #include "entity_manager.h"
-#include "../models/model_interface.h"
+#include "../entities/entity_interface.h"
 
 EntityManager::EntityManager() {}
 
 EntityManager::~EntityManager() {
-    closeDb();
+    EntityManager::closeDb();
 }
 
 QSqlDatabase& EntityManager::openDb() {
@@ -30,87 +31,45 @@ void EntityManager::closeDb() {
     QSqlDatabase::database().close();
 }
 
-QSqlQuery EntityManager::fetchRecords(EntityQueryParams params) {
-    QSqlQuery query = QSqlQuery(constructQuery(params));
-    // qDebug() << "Fetching record: " << params.entityName;
+bool EntityManager::isReady() {
+    QSqlDatabase db = QSqlDatabase::database();
 
-    return query;
+    return db.isOpen();
 }
 
-QSqlQuery EntityManager::fetchRecords(const QString queryStr) {
-    QSqlQuery query = QSqlQuery(queryStr);
+void EntityManager::update(std::shared_ptr<EntityInterface> entity) {
+    QString qStr = "UPDATE " + entity->entityName() + "\nSET ";
+    std::vector<QString> fields = entity->entityFields();
 
-    return query;
-}
+    for (auto field : fields) {
+        if (field == "id") {
+            continue;
+        }
 
-void EntityManager::insertRecords(std::shared_ptr<ModelInterface> model) {
-    std::stringstream query;
-    query << "INSERT " << " INTO " << model->modelName().toStdString();
-    query << ' ' << joinFields(model->modelFields()) << "\nVALUES\n";
-    query << fieldParams(model->modelFields());
-    const QString queryStr(query.str().c_str());
+        qStr.append(field + " = :" + field);
+        if (field != fields.back()) {
+            qStr.append(",\n");
+        } else {
+            qStr.append("\n");
+        }
+    }
+
+    qStr.append("WHERE id = " + std::to_string(entity->getId()));
+    qDebug() << qStr;
 
     QSqlQuery q;
-    q.prepare(queryStr);
-
-    for (auto fieldValues : model->getData()) {
-        q.bindValue(":" + fieldValues.field, fieldValues.value);
-    }
-}
-
-void EntityManager::runQuery(QString queryStr) {
-    
-}
-
-QString EntityManager::constructQuery(EntityQueryParams& params) {
-    std::stringstream q;
-    q <<  "SELECT ";
-
-    std::ptrdiff_t fieldCnt = params.fields.size();
-    std::ptrdiff_t currentIdx = 0;
-    for (QString field : params.fields) {
-        q << field.toStdString();
-
-        if (currentIdx + 1 < fieldCnt) {
-            q << ',';
-        }
-
-        q << ' ';
-        currentIdx++;
-    }
-
-    q << "FROM " << params.entityName.toStdString() << ';';
-
-    return QString(q.str().c_str());
-}
-
-std::string EntityManager::joinFields(std::vector<QString> fields) {
-    std::stringstream modelFields;
-    modelFields << '(';
-    for (QString field : fields) {
-        modelFields << field.toStdString();
-
-        if (field != fields.back()) {
-            modelFields << ", ";
-        }
-    }
-
-    modelFields << ')';
-
-    return modelFields.str();
-}
-
-std::string EntityManager::fieldParams(std::vector<QString> fields) {
-    std::stringstream params;
-    params << '(';
+    q.prepare(qStr);
     for (auto field : fields) {
-        params << ":" + field.toStdString();
-        if (field != fields.back()) {
-            params << ", ";
+        if (field == "id") {
+            continue;
         }
+
+        q.bindValue(":" + field, entity->getData(field));
+        qDebug() << "Binding:" << field << "with value:" << entity->getData(field);
     }
 
-    params << ')';
-
-    return params.str();
+    if (!q.exec()) {
+        qDebug() << "SQL error:" << q.lastError().text();
+        qDebug() << "SQL executed:" << qStr;
+    }
 }
