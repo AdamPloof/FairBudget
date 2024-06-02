@@ -5,6 +5,7 @@
 
 #include "app.h"
 #include "./ui_app.h"
+#include "models/expense_model.h"
 
 App::App(std::shared_ptr<EntityManager> em, QWidget *parent)
     : QMainWindow(parent),
@@ -15,16 +16,19 @@ App::App(std::shared_ptr<EntityManager> em, QWidget *parent)
 
     m_addExpenseForm = new AddExpenseForm(this);
     m_addExpenseForm->setWindowFlag(Qt::Window);
+    m_expenseModel = new ExpenseModel(em);
 }
 
 App::~App()
 {
     delete ui;
     delete m_addExpenseForm;
+    delete m_expenseModel;
 }
 
 void App::run() {
     loadDb();
+    loadTables();
 }
 
 void App::loadDb() {
@@ -36,14 +40,12 @@ void App::setFormatter(TableFormatter* formatter) {
 }
 
 void App::loadTables() {
-
+    m_expenseModel->load();
+    ui->expenseTbl->setModel(m_expenseModel);
+    m_formatter->format(ui->expenseTbl);
 }
 
 void App::loadForms() {
-
-}
-
-void App::formatTable(QTableView* tbl) {
 
 }
 

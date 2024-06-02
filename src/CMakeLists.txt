@@ -13,6 +13,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         services/table_formatter.h services/table_formatter.cpp
         entities/entity_interface.h 
         entities/expense.h entities/expense.cpp
+        models/expense_model.h models/expense_model.cpp
         forms/add_expense_form.h forms/add_expense_form.cpp forms/add_expense_form.ui
     )
 # Define target properties for Android with Qt 6 as:

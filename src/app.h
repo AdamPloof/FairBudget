@@ -14,6 +14,7 @@ class App;
 QT_END_NAMESPACE
 
 class QTableView;
+class ExpenseModel;
 
 class App : public QMainWindow
 {
@@ -33,11 +34,11 @@ private slots:
 private:
     void loadTables();
     void loadForms();
-    void formatTable(QTableView* tbl);
 
     Ui::App* ui;
     AddExpenseForm* m_addExpenseForm;
     TableFormatter* m_formatter;
+    ExpenseModel* m_expenseModel;
 
     std::shared_ptr<EntityManager> m_entityManager;
 };

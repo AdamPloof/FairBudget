@@ -20,6 +20,7 @@ public:
     static QSqlDatabase& openDb();
     static void closeDb();
 
+    void update(std::shared_ptr<EntityInterface> entity);
     bool isReady();
 };
 
