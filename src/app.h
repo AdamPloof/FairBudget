@@ -15,6 +15,7 @@ QT_END_NAMESPACE
 
 class QTableView;
 class ExpenseModel;
+class QItemSelection;
 
 class App : public QMainWindow
 {
@@ -30,10 +31,13 @@ public:
 
 private slots:
     void on_addExpenseBtn_clicked();
+    void on_removeExpenseBtn_clicked();
+    void on_expenseSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
     void loadTables();
-    void loadForms();
+    void connectForms();
+    void connectButtons();
 
     Ui::App* ui;
     AddExpenseForm* m_addExpenseForm;

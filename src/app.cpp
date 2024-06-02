@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <vector>
 #include <QTableView>
+#include <QItemSelection>
 
 #include "app.h"
 #include "./ui_app.h"
@@ -29,6 +30,8 @@ App::~App()
 void App::run() {
     loadDb();
     loadTables();
+    connectForms();
+    connectButtons();
 }
 
 void App::loadDb() {
@@ -45,11 +48,45 @@ void App::loadTables() {
     m_formatter->format(ui->expenseTbl);
 }
 
-void App::loadForms() {
+void App::connectForms() {
+    QObject::connect(
+        m_addExpenseForm,
+        &AddExpenseForm::submitExpense,
+        m_expenseModel,
+        &ExpenseModel::addExpense
+    );
+}
 
+void App::connectButtons() {
+    QObject::connect(
+        ui->expenseTbl->selectionModel(),
+        &QItemSelectionModel::selectionChanged,
+        this,
+        &App::on_expenseSelectionChanged
+    );
 }
 
 void App::on_addExpenseBtn_clicked() {
     m_addExpenseForm->show();
 }
 
+void App::on_removeExpenseBtn_clicked() {
+    QItemSelection selection = ui->expenseTbl->selectionModel()->selection();
+
+    if (!selection.indexes().isEmpty()) {
+        qDebug() << "Removing expense:" << selection.indexes().first().row();
+    } else {
+        qDebug() << "No expenses selected, nothing to delete";
+    }
+}
+
+void App::on_expenseSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected) {
+    if (!selected.indexes().isEmpty()) {
+        ui->removeExpenseBtn->setEnabled(true);
+        QModelIndex index = selected.indexes().first();
+        qDebug() << "Row" << index.row() << "selected";
+    } else {
+        ui->removeExpenseBtn->setEnabled(false);
+        qDebug() << "Selection empty";
+    }
+}
