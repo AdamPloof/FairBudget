@@ -98,19 +98,71 @@ bool ExpenseModel::insertRows(int row, int count, const QModelIndex &parent) {
     return true;
 }
 
-void ExpenseModel::addExpense(std::shared_ptr<EntityInterface> entity) {
+bool ExpenseModel::removeRows(int row, int count, const QModelIndex &parent) {
+    if (row < 0 || row > rowCount() || count <= 0) {
+        return false;
+    }
+
+    beginRemoveRows(parent, row, row + count - 1);
+
+    for (int i = 0; i < count; i++) {
+        m_expenses.removeAt(row);
+    }
+
+    endRemoveRows();
+
+    return true;
+}
+
+void ExpenseModel::addExpense(std::shared_ptr<EntityInterface> expense) {
     QSqlQuery q;
     q.prepare("INSERT INTO expense (description, amount) VALUES (:description, :amount) RETURNING id");
-    q.bindValue(":description", entity->getData("description").toString());
-    q.bindValue(":amount", entity->getData("amount").toFloat());
-    q.exec();
-    q.next();
+    q.bindValue(":description", expense->getData("description").toString());
+    q.bindValue(":amount", expense->getData("amount").toFloat());
 
+    if (q.exec() == false) {
+        // TODO: handle error
+        qDebug() << "Failed to insert expense: " << expense->getData("description");
+        return;
+    }
+    q.next();
     qDebug() << "Inserted: " << q.value(0).toInt();
 
-    entity->setData("id", q.value(0));
+    expense->setData("id", q.value(0));
 
     if (insertRows(rowCount(), 1)) {
-        m_expenses.replace(rowCount() - 1, entity);
+        m_expenses.replace(rowCount() - 1, expense);
     }
+}
+
+void ExpenseModel::removeExpense(std::shared_ptr<EntityInterface> expense) {
+    QSqlQuery q;
+    q.prepare("DELETE FROM expense WHERE id = :id");
+    q.bindValue(":id", expense->getId());
+    if (q.exec() == false) {
+        // TODO: handle error
+        qDebug() << "Failed to delete expense: " << expense->getId();
+        return;
+    }
+
+    qDebug() << "Delete expense: " << expense->getId();
+    int row = -1;
+    for (int i = 0; i < m_expenses.size(); i++) {
+        if (m_expenses.at(i) == expense) {
+            row = i;
+            break;
+        }
+    }
+
+    if (row != -1) {
+        removeRows(row, 1);
+    }
+}
+
+std::shared_ptr<EntityInterface> ExpenseModel::getRow(int row) {
+    if (row < 0 || row > m_expenses.size() - 1) {
+        return nullptr;
+    }
+
+    return m_expenses.at(row);
 }

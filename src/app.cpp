@@ -72,12 +72,17 @@ void App::on_addExpenseBtn_clicked() {
 
 void App::on_removeExpenseBtn_clicked() {
     QItemSelection selection = ui->expenseTbl->selectionModel()->selection();
-
-    if (!selection.indexes().isEmpty()) {
-        qDebug() << "Removing expense:" << selection.indexes().first().row();
-    } else {
-        qDebug() << "No expenses selected, nothing to delete";
+    if (selection.indexes().isEmpty()) {
+        return;
     }
+
+    int row = selection.indexes().first().row();
+    std::shared_ptr<EntityInterface> expense = m_expenseModel->getRow(row);
+    if (expense == nullptr) {
+        return;
+    }
+
+    m_expenseModel->removeExpense(expense);
 }
 
 void App::on_expenseSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected) {

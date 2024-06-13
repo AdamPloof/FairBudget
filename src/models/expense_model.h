@@ -28,9 +28,12 @@ class ExpenseModel : public QAbstractTableModel {
         Qt::ItemFlags flags(const QModelIndex &index) const override;
         bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
         bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+        bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+        std::shared_ptr<EntityInterface> getRow(int row);
 
     public slots:
-        void addExpense(std::shared_ptr<EntityInterface> entity);
+        void addExpense(std::shared_ptr<EntityInterface> expense);
+        void removeExpense(std::shared_ptr<EntityInterface> expense);
 
     private:
         QList<std::shared_ptr<EntityInterface>> m_expenses;
