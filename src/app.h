@@ -6,6 +6,7 @@
 #include "services/entity_manager.h"
 #include "services/table_formatter.h"
 #include "forms/add_expense_form.h"
+#include "forms/add_person_form.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -31,6 +32,7 @@ public:
 
 private slots:
     void on_addExpenseBtn_clicked();
+    void on_addPersonBtn_clicked();
     void on_removeExpenseBtn_clicked();
     void on_expenseSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
@@ -41,6 +43,7 @@ private:
 
     Ui::App* ui;
     AddExpenseForm* m_addExpenseForm;
+    AddPersonForm* m_addPersonForm;
     TableFormatter* m_formatter;
     ExpenseModel* m_expenseModel;
 

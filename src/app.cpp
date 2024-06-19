@@ -17,6 +17,10 @@ App::App(std::shared_ptr<EntityManager> em, QWidget *parent)
 
     m_addExpenseForm = new AddExpenseForm(this);
     m_addExpenseForm->setWindowFlag(Qt::Window);
+
+    m_addPersonForm = new AddPersonForm(this);
+    m_addPersonForm->setWindowFlag(Qt::Window);
+
     m_expenseModel = new ExpenseModel(em);
 }
 
@@ -24,6 +28,7 @@ App::~App()
 {
     delete ui;
     delete m_addExpenseForm;
+    delete m_addPersonForm;
     delete m_expenseModel;
 }
 
@@ -68,6 +73,10 @@ void App::connectButtons() {
 
 void App::on_addExpenseBtn_clicked() {
     m_addExpenseForm->show();
+}
+
+void App::on_addPersonBtn_clicked() {
+    m_addPersonForm->show();
 }
 
 void App::on_removeExpenseBtn_clicked() {

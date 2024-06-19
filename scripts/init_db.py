@@ -30,7 +30,8 @@ class TableBuilder:
             CREATE TABLE IF NOT EXISTS person (
                 id INTEGER PRIMARY KEY,
                 name TEXT NOT NULL,
-                income INTEGER NOT NULL
+                income INTEGER NOT NULL,
+                income_period TEXT NOT NULL
             )
         """
         self.cur.execute(q)
@@ -80,10 +81,10 @@ class FixturesManager:
 
     def insert_people(self) -> None:
         q = """
-            INSERT INTO person (name, income)
+            INSERT INTO person (name, income, income_period)
             VALUES
-                ('Ted', 35000),
-                ('Sherry', 65000)
+                ('Ted', 35000, 'annually'),
+                ('Sherry', 65000, 'annually')
         """
         self.cur.execute(q)
         self.con.commit()
