@@ -13,7 +13,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         services/table_formatter.h services/table_formatter.cpp
         entities/entity_interface.h 
         entities/expense.h entities/expense.cpp
+        entities/person.h entities/person.cpp
         models/expense_model.h models/expense_model.cpp
+        models/person_model.h models/person_model.cpp
         forms/add_expense_form.h forms/add_expense_form.cpp forms/add_expense_form.ui
         forms/add_person_form.h forms/add_person_form.cpp forms/add_person_form.ui
     )
