@@ -34,6 +34,14 @@ void AddExpenseForm::on_addBtn_clicked() {
     this->close();
 }
 
+void AddExpenseForm::setDescription(const QString &description) {
+    ui->descriptionInput->setText(description);
+}
+
+void AddExpenseForm::setAmount(double amount) {
+    ui->amountInput->setValue(amount);
+}
+
 bool AddExpenseForm::isValid() {
     bool isValid = true;
     if (ui->descriptionInput->text().length() == 0) {

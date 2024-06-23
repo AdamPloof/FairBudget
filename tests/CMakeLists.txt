@@ -9,13 +9,19 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 add_executable(
-  expense_test
+  fairbudget_tests
   entities/expense_test.cpp
+  forms/add_expense_test.cpp
+  forms/add_person_test.cpp
   ${CMAKE_SOURCE_DIR}/src/entities/expense.h
   ${CMAKE_SOURCE_DIR}/src/entities/expense.cpp
+  ${CMAKE_SOURCE_DIR}/src/entities/person.h
+  ${CMAKE_SOURCE_DIR}/src/entities/person.cpp
+  ${CMAKE_SOURCE_DIR}/src/forms/add_expense_form.cpp
+  ${CMAKE_SOURCE_DIR}/src/forms/add_person_form.cpp
 )
 target_link_libraries(
-  expense_test
+  fairbudget_tests
   GTest::gtest_main
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt6::Core
@@ -23,4 +29,4 @@ target_link_libraries(
 )
 
 include(GoogleTest)
-gtest_discover_tests(expense_test)
+gtest_discover_tests(fairbudget_tests)

@@ -61,11 +61,20 @@ void App::loadTables() {
 }
 
 void App::connectForms() {
+    // Expense form
     QObject::connect(
         m_addExpenseForm,
         &AddExpenseForm::submitExpense,
         m_expenseModel,
         &ExpenseModel::addExpense
+    );
+
+    // Person form
+    QObject::connect(
+        m_addPersonForm,
+        &AddPersonForm::submitPerson,
+        m_personModel,
+        &PersonModel::addPerson
     );
 }
 
