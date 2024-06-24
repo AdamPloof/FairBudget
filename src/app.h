@@ -35,7 +35,9 @@ private slots:
     void on_addExpenseBtn_clicked();
     void on_addPersonBtn_clicked();
     void on_removeExpenseBtn_clicked();
+    void on_removePersonBtn_clicked();
     void on_expenseSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    void on_personSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
     void loadTables();

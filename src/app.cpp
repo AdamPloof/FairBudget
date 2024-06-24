@@ -79,11 +79,20 @@ void App::connectForms() {
 }
 
 void App::connectButtons() {
+    // Expense table selection --> remove expense button
     QObject::connect(
         ui->expenseTbl->selectionModel(),
         &QItemSelectionModel::selectionChanged,
         this,
         &App::on_expenseSelectionChanged
+    );
+
+    // Person table selection --> remove person button
+    QObject::connect(
+        ui->personTbl->selectionModel(),
+        &QItemSelectionModel::selectionChanged,
+        this,
+        &App::on_personSelectionChanged
     );
 }
 
@@ -110,13 +119,39 @@ void App::on_removeExpenseBtn_clicked() {
     m_expenseModel->removeExpense(expense);
 }
 
+void App::on_removePersonBtn_clicked() {
+    QItemSelection selection = ui->personTbl->selectionModel()->selection();
+    if (selection.indexes().isEmpty()) {
+        return;
+    }
+
+    int row = selection.indexes().first().row();
+    std::shared_ptr<EntityInterface> person = m_personModel->getRow(row);
+    if (person == nullptr) {
+        return;
+    }
+
+    m_personModel->removePerson(person);
+}
+
 void App::on_expenseSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected) {
     if (!selected.indexes().isEmpty()) {
         ui->removeExpenseBtn->setEnabled(true);
         QModelIndex index = selected.indexes().first();
-        qDebug() << "Row" << index.row() << "selected";
+        qDebug() << "Expense row" << index.row() << "selected";
     } else {
         ui->removeExpenseBtn->setEnabled(false);
-        qDebug() << "Selection empty";
+        qDebug() << "Expense selection empty";
+    }
+}
+
+void App::on_personSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected) {
+    if (!selected.indexes().isEmpty()) {
+        ui->removePersonBtn->setEnabled(true);
+        QModelIndex index = selected.indexes().first();
+        qDebug() << "Person row" << index.row() << "selected";
+    } else {
+        ui->removePersonBtn->setEnabled(false);
+        qDebug() << "Person selection empty";
     }
 }
