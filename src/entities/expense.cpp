@@ -33,7 +33,7 @@ const int Expense::getId() const {
     return m_id;
 }
 
-QHash<QString, QVariant> Expense::getData() const {
+QHash<QString, QVariant> Expense::getData(int role) const {
     return {
         {"id", m_id},
         {"description", m_description},
@@ -41,7 +41,7 @@ QHash<QString, QVariant> Expense::getData() const {
     };
 }
 
-QVariant Expense::getData(QString field) const {
+QVariant Expense::getData(QString field, int role) const {
     QVariant data;
     if (field == "id") {
         data = m_id;

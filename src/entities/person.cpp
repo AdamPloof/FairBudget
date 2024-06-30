@@ -35,7 +35,7 @@ const int Person::getId() const {
     return m_id;
 }
 
-QHash<QString, QVariant> Person::getData() const {
+QHash<QString, QVariant> Person::getData(int role) const {
     return {
         {"id", m_id},
         {"name", m_name},
@@ -44,7 +44,7 @@ QHash<QString, QVariant> Person::getData() const {
     };
 }
 
-QVariant Person::getData(QString field) const {
+QVariant Person::getData(QString field, int role) const {
     QVariant data;
     if (field == "id") {
         data = m_id;

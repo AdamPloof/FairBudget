@@ -17,6 +17,7 @@ QT_END_NAMESPACE
 class QTableView;
 class ExpenseModel;
 class PersonModel;
+class PaymentModel;
 class QItemSelection;
 
 class App : public QMainWindow
@@ -50,6 +51,7 @@ private:
     TableFormatter* m_formatter;
     ExpenseModel* m_expenseModel;
     PersonModel* m_personModel;
+    PaymentModel* m_paymentModel;
 
     std::shared_ptr<EntityManager> m_entityManager;
 };

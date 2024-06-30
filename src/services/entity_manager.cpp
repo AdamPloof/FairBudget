@@ -64,8 +64,8 @@ void EntityManager::update(std::shared_ptr<EntityInterface> entity) {
             continue;
         }
 
-        q.bindValue(":" + field, entity->getData(field));
-        qDebug() << "Binding:" << field << "with value:" << entity->getData(field);
+        q.bindValue(":" + field, entity->getData(field, Qt::UserRole));
+        qDebug() << "Binding:" << field << "with value:" << entity->getData(field, Qt::UserRole);
     }
 
     if (!q.exec()) {

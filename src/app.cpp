@@ -8,6 +8,7 @@
 #include "./ui_app.h"
 #include "models/expense_model.h"
 #include "models/person_model.h"
+#include "models/payment_model.h"
 
 App::App(std::shared_ptr<EntityManager> em, QWidget *parent)
     : QMainWindow(parent),
@@ -24,6 +25,7 @@ App::App(std::shared_ptr<EntityManager> em, QWidget *parent)
 
     m_expenseModel = new ExpenseModel(em);
     m_personModel = new PersonModel(em);
+    m_paymentModel = new PaymentModel(em);
 }
 
 App::~App()
@@ -33,6 +35,7 @@ App::~App()
     delete m_addPersonForm;
     delete m_expenseModel;
     delete m_personModel;
+    delete m_paymentModel;
 }
 
 void App::run() {
@@ -51,13 +54,21 @@ void App::setFormatter(TableFormatter* formatter) {
 }
 
 void App::loadTables() {
+    // Expenses
     m_expenseModel->load();
     ui->expenseTbl->setModel(m_expenseModel);
     m_formatter->format(ui->expenseTbl);
 
+    // Persons
     m_personModel->load();
     ui->personTbl->setModel(m_personModel);
     m_formatter->format(ui->personTbl);
+
+    // TODO: seg fault, try disabling payment table
+    // Payments
+    m_paymentModel->load();
+    ui->paymentTbl->setModel(m_paymentModel);
+    m_formatter->format(ui->paymentTbl);
 }
 
 void App::connectForms() {

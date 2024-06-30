@@ -14,8 +14,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         entities/entity_interface.h 
         entities/expense.h entities/expense.cpp
         entities/person.h entities/person.cpp
+        entities/payment.h entities/payment.cpp
         models/expense_model.h models/expense_model.cpp
         models/person_model.h models/person_model.cpp
+        models/payment_model.h models/payment_model.cpp
         forms/add_expense_form.h forms/add_expense_form.cpp forms/add_expense_form.ui
         forms/add_person_form.h forms/add_person_form.cpp forms/add_person_form.ui
     )

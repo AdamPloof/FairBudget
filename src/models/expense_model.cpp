@@ -2,7 +2,6 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
-#include <vector>
 
 #include "expense_model.h"
 #include "../services/entity_manager.h"

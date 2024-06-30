@@ -2,7 +2,6 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
-#include <vector>
 
 #include "person_model.h"
 #include "../services/entity_manager.h"
