@@ -7,6 +7,7 @@
 #include "services/table_formatter.h"
 #include "forms/add_expense_form.h"
 #include "forms/add_person_form.h"
+#include "forms/add_payment_form.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -35,10 +36,13 @@ public:
 private slots:
     void on_addExpenseBtn_clicked();
     void on_addPersonBtn_clicked();
+    void on_addPaymentBtn_clicked();
     void on_removeExpenseBtn_clicked();
     void on_removePersonBtn_clicked();
+    // void on_removePaymentBtn_clicked();
     void on_expenseSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void on_personSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    // void on_paymentSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
     void loadTables();
@@ -48,6 +52,7 @@ private:
     Ui::App* ui;
     AddExpenseForm* m_addExpenseForm;
     AddPersonForm* m_addPersonForm;
+    AddPaymentForm* m_addPaymentForm;
     TableFormatter* m_formatter;
     ExpenseModel* m_expenseModel;
     PersonModel* m_personModel;

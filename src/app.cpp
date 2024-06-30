@@ -23,6 +23,9 @@ App::App(std::shared_ptr<EntityManager> em, QWidget *parent)
     m_addPersonForm = new AddPersonForm(this);
     m_addPersonForm->setWindowFlag(Qt::Window);
 
+    m_addPaymentForm = new AddPaymentForm(this);
+    m_addPaymentForm->setWindowFlag(Qt::Window);
+
     m_expenseModel = new ExpenseModel(em);
     m_personModel = new PersonModel(em);
     m_paymentModel = new PaymentModel(em);
@@ -64,7 +67,6 @@ void App::loadTables() {
     ui->personTbl->setModel(m_personModel);
     m_formatter->format(ui->personTbl);
 
-    // TODO: seg fault, try disabling payment table
     // Payments
     m_paymentModel->load();
     ui->paymentTbl->setModel(m_paymentModel);
@@ -113,6 +115,10 @@ void App::on_addExpenseBtn_clicked() {
 
 void App::on_addPersonBtn_clicked() {
     m_addPersonForm->show();
+}
+
+void App::on_addPaymentBtn_clicked() {
+    m_addPaymentForm->show();
 }
 
 void App::on_removeExpenseBtn_clicked() {
