@@ -29,12 +29,14 @@ protected:
 private slots:
     void on_cancelBtn_clicked();
     void on_addBtn_clicked();
+    void setAmountMax(int index);
 
 private:
     void setPersonOptions();
     void setExpenseOptions();
 
     Ui::AddPaymentForm *ui;
+    double m_maxAmount;
 };
 
 #endif // ADD_PAYMENT_FORM_H
