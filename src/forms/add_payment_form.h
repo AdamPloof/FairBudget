@@ -9,6 +9,8 @@ namespace Ui {
 }
 
 class EntityInterface;
+class Person;
+class Expense;
 
 class AddPaymentForm : public QWidget
 {
@@ -29,14 +31,16 @@ protected:
 private slots:
     void on_cancelBtn_clicked();
     void on_addBtn_clicked();
-    void setAmountMax(int index);
+    void on_selectExpense(int index);
 
 private:
     void setPersonOptions();
     void setExpenseOptions();
+    std::shared_ptr<Person> fetchPerson(int id);
+    std::shared_ptr<Expense> fetchExpense(int id);
 
     Ui::AddPaymentForm *ui;
-    double m_maxAmount;
+    double m_selectedExpenseAmt;
 };
 
 #endif // ADD_PAYMENT_FORM_H

@@ -89,6 +89,14 @@ void App::connectForms() {
         m_personModel,
         &PersonModel::addPerson
     );
+
+    // Payment form
+    QObject::connect(
+        m_addPaymentForm,
+        &AddPaymentForm::submitPayment,
+        m_paymentModel,
+        &PaymentModel::addPayment
+    );
 }
 
 void App::connectButtons() {

@@ -9,6 +9,8 @@
 #include "../entities/payment.h"
 #include "../entities/entity_interface.h"
 
+// TODO: prevent adding more payments than expenses and prevent over-paying expenses
+
 PaymentModel::PaymentModel(
     std::shared_ptr<EntityManager> em,
     QObject *parent
@@ -82,10 +84,7 @@ Qt::ItemFlags PaymentModel::flags(const QModelIndex &index) const {
 
 bool PaymentModel::setData(const QModelIndex &index, const QVariant &value, int role) {
     if (index.isValid() && role == Qt::EditRole) {
-        QString field = Payment::fields.at(index.column());
-        
-        // TODO: set expense and paidBy on Payment
-
+        QString field = Payment::fields.at(index.column());        
         m_payments[index.row()]->setData(field, value);
         m_entityManager->update(m_payments[index.row()]);
         
@@ -128,9 +127,10 @@ bool PaymentModel::removeRows(int row, int count, const QModelIndex &parent) {
 void PaymentModel::addPayment(std::shared_ptr<EntityInterface> payment) {
     // TODO write insert payment query
     QSqlQuery q;
-    q.prepare("INSERT INTO payment (description, amount) VALUES (:description, :amount) RETURNING id");
-    q.bindValue(":description", payment->getData("description").toString());
-    q.bindValue(":amount", payment->getData("amount").toFloat());
+    q.prepare("INSERT INTO payment (paid_by, expense, amount) VALUES (:paid_by, :expense, :amount) RETURNING id");
+    q.bindValue(":paid_by", payment->getData("paid_by", Qt::UserRole));
+    q.bindValue(":expense", payment->getData("expense", Qt::UserRole));
+    q.bindValue(":amount", payment->getData("amount", Qt::UserRole));
 
     if (q.exec() == false) {
         // TODO: handle error
@@ -138,7 +138,7 @@ void PaymentModel::addPayment(std::shared_ptr<EntityInterface> payment) {
         return;
     }
     q.next();
-    qDebug() << "Inserted: " << q.value(0).toInt();
+    qDebug() << "Inserted payment: " << q.value(0).toInt();
 
     payment->setData("id", q.value(0));
 

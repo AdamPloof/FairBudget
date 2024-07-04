@@ -25,7 +25,7 @@ void ExpenseModel::load() {
         std::shared_ptr<Expense> exp = std::make_shared<Expense>(Expense());
         exp->setData("id", q.value(0).toInt());
         exp->setData("description", q.value(1).toString());
-        exp->setData("amount", q.value(2).toFloat());
+        exp->setData("amount", q.value(2).toDouble());
         m_expenses.push_back(exp);
 
         qDebug() << "Load item: " << q.value(0).toString();

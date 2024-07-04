@@ -17,6 +17,7 @@ std::vector<QString> Payment::entityFields() const {
     return Payment::fields;
 }
 
+// TODO: handle setting expense and paidBy with ID
 void Payment::setData(QString field, QVariant val) {
     if (field == "id") {
         m_id = val.toInt();

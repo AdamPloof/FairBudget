@@ -1,9 +1,14 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QComboBox>
+#include <memory>
+#include <sstream>
 
 #include "add_payment_form.h"
 #include "ui_add_payment_form.h"
+#include "../entities/payment.h"
+#include "../entities/person.h"
+#include "../entities/expense.h"
 
 AddPaymentForm::AddPaymentForm(QWidget *parent)
     : QWidget(parent)
@@ -15,7 +20,7 @@ AddPaymentForm::AddPaymentForm(QWidget *parent)
         ui->expenseSelect,
         &QComboBox::currentIndexChanged,
         this,
-        &AddPaymentForm::setAmountMax
+        &AddPaymentForm::on_selectExpense
     );
 }
 
@@ -25,7 +30,20 @@ AddPaymentForm::~AddPaymentForm()
 }
 
 bool AddPaymentForm::isValid() {
-    return ui->amountInput->value() <= m_maxAmount;
+    bool isValid = true;
+    if (!ui->personSelect->currentData().isValid()) {
+        isValid = false;
+    }
+
+    if (!ui->expenseSelect->currentData().isValid()) {
+        isValid = false;
+    }
+
+    if (ui->amountInput->value() <= m_selectedExpenseAmt) {
+        isValid = false;
+    }
+
+    return isValid;
 }
 
 void AddPaymentForm::showEvent(QShowEvent *event) {
@@ -33,7 +51,7 @@ void AddPaymentForm::showEvent(QShowEvent *event) {
 
     setPersonOptions();
     setExpenseOptions();
-    setAmountMax(ui->expenseSelect->currentIndex());
+    on_selectExpense(ui->expenseSelect->currentIndex());
 }
 
 void AddPaymentForm::on_cancelBtn_clicked() {
@@ -45,30 +63,47 @@ void AddPaymentForm::on_addBtn_clicked() {
         this->close();
     }
 
-    // TODO: submit the payment
+    std::shared_ptr<Payment> payment = std::make_shared<Payment>(Payment());
+    payment->setData("amount", ui->amountInput->value());
+
+    std::shared_ptr<Expense> exp = fetchExpense(ui->expenseSelect->currentData().toInt());
+    payment->setExpense(exp);
+
+    std::shared_ptr<Person> paidBy = fetchPerson(ui->personSelect->currentData().toInt());
+    payment->setPaidBy(paidBy);
+
+    emit submitPayment(payment);
     this->close();
 }
 
-void AddPaymentForm::setAmountMax(int index) {
+/**
+ * Set the the amount input to the expense amount
+ * Set the maximum amount to the selected expense amount
+ * 
+ * TODO: limit max amount to total of expense amonut minus other payments agains
+ *       that expense.
+ */
+void AddPaymentForm::on_selectExpense(int index) {
     QSqlQuery q;
     q.prepare("SELECT amount FROM expense WHERE id = :id");
 
     const int expId = ui->expenseSelect->itemData(index).toInt();
     q.bindValue(":id", expId);
-    qDebug() << "Setting max payment amount for expense: " << expId;
+    qDebug() << "Setting selected expens amount: " << expId;
 
     if (!q.exec()) {
         qDebug() << "Query execution error: " << q.lastError().text();
     } else {
         if (q.first()) {
-            m_maxAmount = q.value(0).toDouble();
-            qDebug() << "Max payment amount: " << m_maxAmount;
+            m_selectedExpenseAmt = q.value(0).toDouble();
+            qDebug() << "Selected expens amount: " << m_selectedExpenseAmt;
         } else {
             qDebug() << "No record found for id: " << expId;
         }
     }
 
-    ui->amountInput->setMaximum(m_maxAmount);
+    ui->amountInput->setValue(m_selectedExpenseAmt);
+    ui->amountInput->setMaximum(m_selectedExpenseAmt);
 }
 
 void AddPaymentForm::setPersonOptions() {
@@ -89,4 +124,53 @@ void AddPaymentForm::setExpenseOptions() {
         ui->expenseSelect->insertItem(idx, q.value(1).toString(), q.value(0).toInt());
         idx++;
     }
+}
+
+std::shared_ptr<Person> AddPaymentForm::fetchPerson(int id) {
+    QSqlQuery q;
+    q.prepare("SELECT id, name, income, income_period FROM person WHERE id = :id");
+    q.bindValue(":id", id);
+
+    if (!q.exec()) {
+        qDebug() << "Could not fetch person for id: " << id;
+    }
+
+    std::shared_ptr<Person> p = std::make_shared<Person>(Person());
+    if (q.first()) {
+        p->setData("id", id);
+        p->setData("name", q.value(1));
+        p->setData("income", q.value(2));
+        p->setData("income_period", q.value(3));
+    } else {
+        std::stringstream err;
+        err << "No person found for id: ";
+        err << id;
+        throw std::invalid_argument(err.str());
+    }
+
+    return p;
+}
+
+std::shared_ptr<Expense> AddPaymentForm::fetchExpense(int id) {
+    QSqlQuery q;
+    q.prepare("SELECT id, description, amount FROM expense WHERE id = :id");
+    q.bindValue(":id", id);
+
+    if (!q.exec()) {
+        qDebug() << "Could not fetch expense for id: " << id;
+    }
+
+    std::shared_ptr<Expense> e = std::make_shared<Expense>(Expense());
+    if (q.first()) {
+        e->setData("id", id);
+        e->setData("description", q.value(1));
+        e->setData("amount", q.value(2));
+    } else {
+        std::stringstream err;
+        err << "No expense found for id: ";
+        err << id;
+        throw std::invalid_argument(err.str());
+    }
+
+    return e;
 }
