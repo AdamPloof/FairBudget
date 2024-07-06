@@ -39,10 +39,10 @@ private slots:
     void on_addPaymentBtn_clicked();
     void on_removeExpenseBtn_clicked();
     void on_removePersonBtn_clicked();
-    // void on_removePaymentBtn_clicked();
+    void on_removePaymentBtn_clicked();
     void on_expenseSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void on_personSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-    // void on_paymentSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    void on_paymentSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
     void loadTables();

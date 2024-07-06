@@ -36,6 +36,7 @@ App::~App()
     delete ui;
     delete m_addExpenseForm;
     delete m_addPersonForm;
+    delete m_addPaymentForm;
     delete m_expenseModel;
     delete m_personModel;
     delete m_paymentModel;
@@ -115,6 +116,14 @@ void App::connectButtons() {
         this,
         &App::on_personSelectionChanged
     );
+
+    // Payment table selection --> remove payment button
+    QObject::connect(
+        ui->paymentTbl->selectionModel(),
+        &QItemSelectionModel::selectionChanged,
+        this,
+        &App::on_paymentSelectionChanged
+    );
 }
 
 void App::on_addExpenseBtn_clicked() {
@@ -159,6 +168,21 @@ void App::on_removePersonBtn_clicked() {
     m_personModel->removePerson(person);
 }
 
+void App::on_removePaymentBtn_clicked() {
+    QItemSelection selection = ui->paymentTbl->selectionModel()->selection();
+    if (selection.indexes().isEmpty()) {
+        return;
+    }
+
+    int row = selection.indexes().first().row();
+    std::shared_ptr<EntityInterface> payment = m_paymentModel->getRow(row);
+    if (payment == nullptr) {
+        return;
+    }
+
+    m_paymentModel->removePayment(payment);
+}
+
 void App::on_expenseSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected) {
     if (!selected.indexes().isEmpty()) {
         ui->removeExpenseBtn->setEnabled(true);
@@ -178,5 +202,16 @@ void App::on_personSelectionChanged(const QItemSelection &selected, const QItemS
     } else {
         ui->removePersonBtn->setEnabled(false);
         qDebug() << "Person selection empty";
+    }
+}
+
+void App::on_paymentSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected) {
+    if (!selected.indexes().isEmpty()) {
+        ui->removePaymentBtn->setEnabled(true);
+        QModelIndex index = selected.indexes().first();
+        qDebug() << "Payment row" << index.row() << "selected";
+    } else {
+        ui->removePaymentBtn->setEnabled(false);
+        qDebug() << "Payment selection empty";
     }
 }
