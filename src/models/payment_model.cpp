@@ -60,6 +60,12 @@ QVariant PaymentModel::data(const QModelIndex &index, int role) const {
         return m_payments[index.row()]->getData(field, Qt::DisplayRole);
     }
 
+    if (role == Qt::EditRole && !m_payments.isEmpty()) {
+        QString field = Payment::fields.at(index.column());
+
+        return m_payments[index.row()]->getData(field, Qt::EditRole);
+    }
+
     return QVariant();
 }
 

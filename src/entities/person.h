@@ -23,7 +23,7 @@ public:
 private:
     int m_id;
     QString m_name;
-    float m_income;
+    double m_income;
     QString m_incomePeriod;
 };
 

@@ -23,7 +23,7 @@ void Expense::setData(QString field, QVariant val) {
     } else if (field == "description") {
         m_description = val.toString();
     } else if (field == "amount") {
-        m_amount = val.toFloat();
+        m_amount = val.toDouble();
     } else {
         throw std::invalid_argument("Invalid field for Expense");
     }

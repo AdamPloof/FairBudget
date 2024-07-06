@@ -14,5 +14,5 @@ TEST(ExpenseTest, DataIsSet) {
     QHash<QString, QVariant> data = expense.getData();
     EXPECT_EQ(42, data["id"].toInt());
     EXPECT_EQ("Forty two", data["description"].toString().toStdString());
-    EXPECT_FLOAT_EQ(4.2, data["amount"].toFloat());
+    EXPECT_DOUBLE_EQ(4.2, data["amount"].toDouble());
 }

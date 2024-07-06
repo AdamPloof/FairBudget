@@ -44,7 +44,10 @@ int PersonModel::columnCount(const QModelIndex &parent) const {
 }
 
 QVariant PersonModel::data(const QModelIndex &index, int role) const {
-    if (role == Qt::DisplayRole && !m_persons.isEmpty()) {
+    if (
+        (role == Qt::DisplayRole || role == Qt::EditRole)
+        && !m_persons.isEmpty()
+    ) {
         QString field = Person::fields.at(index.column());
 
         return m_persons[index.row()]->getData(field);

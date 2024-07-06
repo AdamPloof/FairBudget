@@ -23,7 +23,7 @@ void Person::setData(QString field, QVariant val) {
     } else if (field == "name") {
         m_name = val.toString();
     } else if (field == "income") {
-        m_income = val.toFloat();
+        m_income = val.toDouble();
     } else if (field == "income_period") {
         m_incomePeriod = val.toString();
     } else {

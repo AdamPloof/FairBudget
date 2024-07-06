@@ -43,7 +43,10 @@ int ExpenseModel::columnCount(const QModelIndex &parent) const {
 }
 
 QVariant ExpenseModel::data(const QModelIndex &index, int role) const {
-    if (role == Qt::DisplayRole && !m_expenses.isEmpty()) {
+    if (
+        (role == Qt::DisplayRole || role == Qt::EditRole)
+        && !m_expenses.isEmpty()
+    ) {
         QString field = Expense::fields.at(index.column());
 
         return m_expenses[index.row()]->getData(field);

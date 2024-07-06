@@ -22,7 +22,7 @@ void Payment::setData(QString field, QVariant val) {
     if (field == "id") {
         m_id = val.toInt();
     } else if (field == "amount") {
-        m_amount = val.toFloat();
+        m_amount = val.toDouble();
     } else {
         throw std::invalid_argument("Invalid field for Payment");
     }

@@ -23,7 +23,7 @@ public:
 private:
     int m_id;
     QString m_description;
-    float m_amount;
+    double m_amount;
 };
 
 #endif // EXPENSE_H
