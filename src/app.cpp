@@ -1,6 +1,5 @@
 #include <QString>
 #include <QDebug>
-#include <vector>
 #include <QTableView>
 #include <QItemSelection>
 
@@ -9,6 +8,7 @@
 #include "models/expense_model.h"
 #include "models/person_model.h"
 #include "models/payment_model.h"
+#include "delegates/combo_box_delegate.h"
 
 App::App(std::shared_ptr<EntityManager> em, QWidget *parent)
     : QMainWindow(parent),
@@ -67,6 +67,10 @@ void App::loadTables() {
     m_personModel->load();
     ui->personTbl->setModel(m_personModel);
     m_formatter->format(ui->personTbl);
+
+    ComboBoxDelegate *cbDelegate = new ComboBoxDelegate(ui->personTbl);
+    cbDelegate->setOptions(AddPersonForm::periodOptions);
+    ui->personTbl->setItemDelegateForColumn(3, cbDelegate);
 
     // Payments
     m_paymentModel->load();

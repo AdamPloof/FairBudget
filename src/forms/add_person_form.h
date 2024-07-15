@@ -25,7 +25,7 @@ public:
     void setIncomePeriod(const QString &period);
     bool isValid();
 
-    static QHash<QString, QString> periodOptions;
+    static QHash<QString, QVariant> periodOptions;
 
 signals:
     void submitPerson(std::shared_ptr<EntityInterface> person);

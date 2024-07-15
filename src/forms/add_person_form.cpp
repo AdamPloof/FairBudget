@@ -16,11 +16,11 @@ AddPersonForm::~AddPersonForm()
     delete ui;
 }
 
-QHash<QString, QString> AddPersonForm::periodOptions = {
+QHash<QString, QVariant> AddPersonForm::periodOptions = {
     {"Weekly", "weekly"},
     {"Bi-weekly", "bi_weekly"},
     {"Monthly", "monthly"},
-    {"Annually", "anually"}
+    {"Annually", "annually"}
 };
 
 void AddPersonForm::on_cancelBtn_clicked() {
@@ -69,11 +69,11 @@ bool AddPersonForm::isValid() {
         isValid = false;
     }
 
-    QList<QString> opts = AddPersonForm::periodOptions.values();
+    QList<QVariant> opts = AddPersonForm::periodOptions.values();
     QString period = ui->periodSelect->currentData().toString();
     bool validPeriod = false;
     for (auto opt : opts) {
-        if (opt == period) {
+        if (opt.toString() == period) {
             validPeriod = true;
             break;
         }
@@ -87,7 +87,7 @@ bool AddPersonForm::isValid() {
 }
 
 void AddPersonForm::setPeriodOptions() {
-    QHash<QString, QString>::const_iterator i = AddPersonForm::periodOptions.constBegin();
+    QHash<QString, QVariant>::const_iterator i = AddPersonForm::periodOptions.constBegin();
     while (i != AddPersonForm::periodOptions.constEnd()) {
         int optIdx = ui->periodSelect->findText(i.key());
         if (optIdx != -1) {
