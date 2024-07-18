@@ -11,6 +11,7 @@ namespace Ui {
 }
 
 class EntityInterface;
+class IncomePeriod;
 
 class AddPersonForm : public QWidget
 {
@@ -25,10 +26,11 @@ public:
     void setIncomePeriod(const QString &period);
     bool isValid();
 
-    static QHash<QString, QVariant> periodOptions;
-
 signals:
     void submitPerson(std::shared_ptr<EntityInterface> person);
+
+protected:
+    void showEvent(QShowEvent *event) override;
 
 private slots:
     void on_cancelBtn_clicked();
@@ -36,6 +38,7 @@ private slots:
 
 private:
     void setPeriodOptions();
+    std::shared_ptr<IncomePeriod> fetchIncomePeriod(int id);
 
     Ui::AddPersonForm *ui;
 };

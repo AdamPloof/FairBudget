@@ -1,14 +1,18 @@
 #include <QList>
+#include <QSqlQuery>
+#include <QDebug>
+#include <sstream>
+
 #include "add_person_form.h"
 #include "ui_add_person_form.h"
 #include "../entities/person.h"
+#include "../entities/income_period.h"
 
 AddPersonForm::AddPersonForm(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::AddPersonForm)
 {
     ui->setupUi(this);
-    setPeriodOptions();
 }
 
 AddPersonForm::~AddPersonForm()
@@ -16,12 +20,10 @@ AddPersonForm::~AddPersonForm()
     delete ui;
 }
 
-QHash<QString, QVariant> AddPersonForm::periodOptions = {
-    {"Weekly", "weekly"},
-    {"Bi-weekly", "bi_weekly"},
-    {"Monthly", "monthly"},
-    {"Annually", "annually"}
-};
+void AddPersonForm::showEvent(QShowEvent *event) {
+    QWidget::showEvent(event);
+    setPeriodOptions();
+}
 
 void AddPersonForm::on_cancelBtn_clicked() {
     this->close();
@@ -36,7 +38,9 @@ void AddPersonForm::on_addBtn_clicked() {
     std::shared_ptr<Person> person = std::make_shared<Person>(Person());
     person->setData("name", ui->nameInput->text());
     person->setData("income", ui->incomeInput->value());
-    person->setData("income_period", ui->periodSelect->currentData());
+
+    std::shared_ptr<IncomePeriod> period = fetchIncomePeriod(ui->periodSelect->currentData().toInt());
+    person->setIncomePeriod(period);
 
     emit submitPerson(person);
     this->close();
@@ -69,31 +73,40 @@ bool AddPersonForm::isValid() {
         isValid = false;
     }
 
-    QList<QVariant> opts = AddPersonForm::periodOptions.values();
-    QString period = ui->periodSelect->currentData().toString();
-    bool validPeriod = false;
-    for (auto opt : opts) {
-        if (opt.toString() == period) {
-            validPeriod = true;
-            break;
-        }
-    }
-
-    if (!validPeriod) {
-        isValid = false;
-    }
+    // TODO: validate selected period option
 
     return isValid;
 }
 
 void AddPersonForm::setPeriodOptions() {
-    QHash<QString, QVariant>::const_iterator i = AddPersonForm::periodOptions.constBegin();
-    while (i != AddPersonForm::periodOptions.constEnd()) {
-        int optIdx = ui->periodSelect->findText(i.key());
-        if (optIdx != -1) {
-            ui->periodSelect->setItemData(optIdx, i.value());
-        }
-
-        i++;
+    ui->periodSelect->clear();
+    QSqlQuery q = QSqlQuery("SELECT id, label FROM income_period");
+    int idx = 0;
+    while (q.next()) {
+        ui->periodSelect->insertItem(idx, q.value(1).toString(), q.value(0).toInt());
+        idx++;
     }
+}
+
+std::shared_ptr<IncomePeriod> AddPersonForm::fetchIncomePeriod(int id) {
+    QSqlQuery q;
+    q.prepare("SELECT id, period, label FROM income_period WHERE id = :id");
+    q.bindValue(":id", id);
+    if (!q.exec()) {
+        qDebug() << "Could not fetch income period: " << id;
+    }
+
+    std::shared_ptr<IncomePeriod> ip = std::make_shared<IncomePeriod>(IncomePeriod());
+    if (q.first()) {
+        ip->setData("id", id);
+        ip->setData("period", q.value(1).toString());
+        ip->setData("label", q.value(2).toString());
+    } else {
+        std::stringstream err;
+        err << "Could not fetch income period for ID: ";
+        err << id;
+        throw std::invalid_argument(err.str());
+    }
+
+    return ip;
 }

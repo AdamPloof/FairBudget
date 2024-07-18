@@ -9,7 +9,8 @@
 enum class EntityType {
     EXPENSE,
     PERSON,
-    PAYMENT
+    PAYMENT,
+    INCOME_PERIOD
 };
 
 class EntityInterface {

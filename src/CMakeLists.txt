@@ -12,6 +12,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         services/entity_manager.h services/entity_manager.cpp
         services/table_formatter.h services/table_formatter.cpp
         entities/entity_interface.h 
+        entities/income_period.h entities/income_period.cpp
         entities/expense.h entities/expense.cpp
         entities/person.h entities/person.cpp
         entities/payment.h entities/payment.cpp

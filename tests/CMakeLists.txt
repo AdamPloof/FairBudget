@@ -17,6 +17,8 @@ add_executable(
   ${CMAKE_SOURCE_DIR}/src/entities/expense.cpp
   ${CMAKE_SOURCE_DIR}/src/entities/person.h
   ${CMAKE_SOURCE_DIR}/src/entities/person.cpp
+  ${CMAKE_SOURCE_DIR}/src/entities/income_period.h
+  ${CMAKE_SOURCE_DIR}/src/entities/income_period.cpp
   ${CMAKE_SOURCE_DIR}/src/forms/add_expense_form.cpp
   ${CMAKE_SOURCE_DIR}/src/forms/add_person_form.cpp
 )

@@ -9,6 +9,7 @@ class TableBuilder:
 
     def build_tables(self) -> None:
         self.enable_foreign_keys()
+        self.create_income_period_tbl()
         self.create_person_tbl()
         self.create_expense_tbl()
         self.create_payments_tbl()
@@ -25,13 +26,26 @@ class TableBuilder:
         self.cur.execute(q)
         self.con.commit()
 
+    def create_income_period_tbl(self) -> None:
+        q = """
+            CREATE TABLE IF NOT EXISTS income_period (
+                id INTEGER PRIMARY KEY,
+                period TEXT NOT NULL,
+                label TEXT NOT NULL
+            )
+        """
+        self.cur.execute(q)
+
     def create_person_tbl(self) -> None:
         q = """
             CREATE TABLE IF NOT EXISTS person (
                 id INTEGER PRIMARY KEY,
                 name TEXT NOT NULL,
                 income INTEGER NOT NULL,
-                income_period TEXT NOT NULL
+                income_period INTEGER NOT NULL,
+                FOREIGN KEY (income_period)
+                    REFERENCES income_period (id)
+                    ON DELETE CASCADE
             )
         """
         self.cur.execute(q)
@@ -57,7 +71,7 @@ class TableBuilder:
                     REFERENCES person (id)
                     ON DELETE CASCADE,
                 FOREIGN KEY (expense)
-                    REFERENCES expense(id)
+                    REFERENCES expense (id)
                     ON DELETE CASCADE
             )
         """
@@ -77,14 +91,27 @@ class FixturesManager:
         self.insert_people()
         self.insert_expenses()
         self.insert_payments()
+        self.insert_income_periods()
         print('Fixtures inserted.')
+
+    def insert_income_periods(self) -> None:
+        q = """
+            INSERT INTO income_period (period, label)
+            VALUES
+                ('weekly', 'Weekly'),
+                ('bi_weekly', 'Bi-weekly'),
+                ('monthly', 'Monthly'),
+                ('annually', 'Annually')
+        """
+        self.cur.execute(q)
+        self.con.commit()
 
     def insert_people(self) -> None:
         q = """
             INSERT INTO person (name, income, income_period)
             VALUES
-                ('Ted', 35000, 'annually'),
-                ('Sherry', 65000, 'annually')
+                ('Ted', 35000, 4),
+                ('Sherry', 65000, 4)
         """
         self.cur.execute(q)
         self.con.commit()

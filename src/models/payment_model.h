@@ -37,7 +37,7 @@ class PaymentModel : public QAbstractTableModel {
         void removePayment(std::shared_ptr<EntityInterface> payment);
 
     private:
-        void makePayment(QSqlQuery* q);
+        void buildPayment(QSqlQuery* q);
 
         QList<std::shared_ptr<EntityInterface>> m_payments;
         std::shared_ptr<EntityManager> m_entityManager;

@@ -1,3 +1,5 @@
+#include <string>
+#include <sstream>
 #include "payment.h"
 
 QString Payment::name = "payment";
@@ -55,10 +57,14 @@ QHash<QString, QVariant> Payment::getData(int role) const {
             {"expense", m_expense->getData("id")},
             {"amount", m_amount}
         };
+    } else {
+        std::stringstream err;
+        err << "Invalid role provided for getData: " << role;
+        throw std::invalid_argument(err.str());
     }
-
 }
 
+// TODO: could probably clean up the fetch field based on role conditions
 QVariant Payment::getData(QString field, int role) const {
     QVariant data;
     if (field == "id") {
@@ -69,7 +75,9 @@ QVariant Payment::getData(QString field, int role) const {
         } else if (role == Qt::UserRole) {
             data = m_paidBy->getData("id");
         } else {
-            throw std::invalid_argument("Invalid role for Payment data");
+            std::stringstream err;
+            err << "Invalid role provided for getData: " << role;
+            throw std::invalid_argument(err.str());
         }
     } else if (field == "expense") {
         if (role == Qt::DisplayRole) {
@@ -77,12 +85,14 @@ QVariant Payment::getData(QString field, int role) const {
         } else if (role == Qt::UserRole) {
             data = m_expense->getData("id");
         } else {
-            throw std::invalid_argument("Invalid role for Payment data");
+            std::stringstream err;
+            err << "Invalid role provided for getData: " << role;
+            throw std::invalid_argument(err.str());
         }
     } else if (field == "amount") {
         data = m_amount;
     } else {
-        throw std::invalid_argument("Invalid field for Payment");
+        throw std::invalid_argument("Invalid field for Payment: " + field.toStdString());
     }
 
     return data;

@@ -9,6 +9,7 @@
 #include "../entities/payment.h"
 #include "../entities/person.h"
 #include "../entities/expense.h"
+#include "../entities/income_period.h"
 
 AddPaymentForm::AddPaymentForm(QWidget *parent)
     : QWidget(parent)
@@ -39,6 +40,7 @@ bool AddPaymentForm::isValid() {
         isValid = false;
     }
 
+    // TODO: Shouldn't this be >=? -- add test
     if (ui->amountInput->value() <= m_selectedExpenseAmt) {
         isValid = false;
     }
@@ -89,7 +91,7 @@ void AddPaymentForm::on_selectExpense(int index) {
 
     const int expId = ui->expenseSelect->itemData(index).toInt();
     q.bindValue(":id", expId);
-    qDebug() << "Setting selected expens amount: " << expId;
+    qDebug() << "Setting selected expense amount: " << expId;
 
     if (!q.exec()) {
         qDebug() << "Query execution error: " << q.lastError().text();
@@ -140,7 +142,7 @@ std::shared_ptr<Person> AddPaymentForm::fetchPerson(int id) {
         p->setData("id", id);
         p->setData("name", q.value(1));
         p->setData("income", q.value(2));
-        p->setData("income_period", q.value(3));
+        p->setIncomePeriod(fetchIncomePeriod(q.value(3).toInt()));
     } else {
         std::stringstream err;
         err << "No person found for id: ";
@@ -173,4 +175,28 @@ std::shared_ptr<Expense> AddPaymentForm::fetchExpense(int id) {
     }
 
     return e;
+}
+
+std::shared_ptr<IncomePeriod> AddPaymentForm::fetchIncomePeriod(int id) {
+    QSqlQuery q;
+    q.prepare("SELECT id, period, label FROM income_period WHERE id = :id");
+    q.bindValue(":id", id);
+
+    if (!q.exec()) {
+        qDebug() << "Could not fetch income period for id: " << id;
+    }
+
+    std::shared_ptr<IncomePeriod> ip = std::make_shared<IncomePeriod>(IncomePeriod());
+    if (q.first()) {
+        ip->setData("id", id);
+        ip->setData("period", q.value(1));
+        ip->setData("label", q.value(2));
+    } else {
+        std::stringstream err;
+        err << "No income period found for id: ";
+        err << id;
+        throw std::invalid_argument(err.str());
+    }
+
+    return ip;
 }

@@ -3,6 +3,7 @@
 
 #include <QAbstractTableModel>
 #include <QSqlDatabase>
+#include <QSqlQuery>
 #include <QString>
 #include <QList>
 #include <memory>
@@ -36,6 +37,8 @@ class PersonModel : public QAbstractTableModel {
         void removePerson(std::shared_ptr<EntityInterface> person);
 
     private:
+        void buildPerson(QSqlQuery *q);
+
         QList<std::shared_ptr<EntityInterface>> m_persons;
         std::shared_ptr<EntityManager> m_entityManager;
 };

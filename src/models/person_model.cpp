@@ -1,12 +1,14 @@
 #include <QList>
+#include <QString>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
 
 #include "person_model.h"
 #include "../services/entity_manager.h"
-#include "../entities/person.h"
 #include "../entities/entity_interface.h"
+#include "../entities/person.h"
+#include "../entities/income_period.h"
 
 PersonModel::PersonModel(
     std::shared_ptr<EntityManager> em,
@@ -20,15 +22,18 @@ PersonModel::PersonModel(
 // }
 
 void PersonModel::load() {
-    QSqlQuery q = QSqlQuery("SELECT id, name, income, income_period FROM person");
+    QString qStr = 
+        "SELECT p.id, "
+        "    p.name, "
+        "    p.income, "
+        "    i.id AS period_id, "
+        "    i.period AS period_desc, "
+        "    i.label AS period_label "
+        "FROM person p "
+        "LEFT JOIN income_period i ON p.income_period = i.id";
+    QSqlQuery q = QSqlQuery(qStr);
     while (q.next()) {
-        std::shared_ptr<Person> person = std::make_shared<Person>(Person());
-        person->setData("id", q.value(0).toInt());
-        person->setData("name", q.value(1).toString());
-        person->setData("income", q.value(2).toFloat());
-        person->setData("income_period", q.value(3).toString());
-        m_persons.push_back(person);
-
+        buildPerson(&q);
         qDebug() << "Load person: " << q.value(0).toString();
     }
 
@@ -120,9 +125,9 @@ bool PersonModel::removeRows(int row, int count, const QModelIndex &parent) {
 void PersonModel::addPerson(std::shared_ptr<EntityInterface> person) {
     QSqlQuery q;
     q.prepare("INSERT INTO person (name, income, income_period) VALUES (:name, :income, :income_period) RETURNING id");
-    q.bindValue(":name", person->getData("name").toString());
-    q.bindValue(":income", person->getData("income").toFloat());
-    q.bindValue(":income_period", person->getData("income_period").toString());
+    q.bindValue(":name", person->getData("name", Qt::UserRole).toString());
+    q.bindValue(":income", person->getData("income", Qt::UserRole).toDouble());
+    q.bindValue(":income_period", person->getData("income_period", Qt::UserRole).toInt());
 
     if (q.exec() == false) {
         // TODO: handle error
@@ -169,4 +174,29 @@ std::shared_ptr<EntityInterface> PersonModel::getRow(int row) {
     }
 
     return m_persons.at(row);
+}
+
+/**
+ * Query result columns:
+ * 
+ * 0 p.id
+ * 1 p.name
+ * 2 p.income
+ * 3 i.id AS period_id
+ * 4 i.period AS period_desc
+ * 5 i.label AS period_label
+ */
+void PersonModel::buildPerson(QSqlQuery *q) {
+    std::shared_ptr<Person> person = std::make_shared<Person>(Person());
+    person->setData("id", q->value(0).toInt());
+    person->setData("name", q->value(1).toString());
+    person->setData("income", q->value(2).toFloat());
+
+    std::shared_ptr<IncomePeriod> period = std::make_shared<IncomePeriod>(IncomePeriod());
+    period->setData("id", q->value(3).toInt());
+    period->setData("period", q->value(4).toString());
+    period->setData("label", q->value(5).toString());
+    person->setIncomePeriod(period);
+
+    m_persons.push_back(person);
 }

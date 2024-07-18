@@ -1,3 +1,5 @@
+#include <string>
+#include <sstream>
 #include "person.h"
 
 QString Person::name = "person";
@@ -24,11 +26,13 @@ void Person::setData(QString field, QVariant val) {
         m_name = val.toString();
     } else if (field == "income") {
         m_income = val.toDouble();
-    } else if (field == "income_period") {
-        m_incomePeriod = val.toString();
     } else {
         throw std::invalid_argument("Invalid field for Person");
     }
+}
+
+void Person::setIncomePeriod(std::shared_ptr<IncomePeriod> period) {
+    m_incomePeriod = period;
 }
 
 const int Person::getId() const {
@@ -36,12 +40,25 @@ const int Person::getId() const {
 }
 
 QHash<QString, QVariant> Person::getData(int role) const {
-    return {
-        {"id", m_id},
-        {"name", m_name},
-        {"income", m_income},
-        {"income_period", m_incomePeriod}
-    };
+    if (role == Qt::DisplayRole) {
+        return {
+            {"id", m_id},
+            {"name", m_name},
+            {"income", m_income},
+            {"income_period", m_incomePeriod->getData("label")}
+        };
+    } else if (role == Qt::UserRole) {
+        return {
+            {"id", m_id},
+            {"name", m_name},
+            {"income", m_income},
+            {"income_period", m_incomePeriod->getData("id")}
+        };
+    } else {
+        std::stringstream err;
+        err << "Invalid role provided for getData: " << role;
+        throw std::invalid_argument(err.str());
+    }
 }
 
 QVariant Person::getData(QString field, int role) const {
@@ -53,10 +70,22 @@ QVariant Person::getData(QString field, int role) const {
     } else if (field == "income") {
         data = m_income;
     } else if (field == "income_period") {
-        data = m_incomePeriod;
+        if (role == Qt::DisplayRole) {
+            data = m_incomePeriod->getData("label");
+        } else if (role == Qt::UserRole) {
+            data = m_incomePeriod->getData("id");
+        } else {
+            std::stringstream err;
+            err << "Invalid role provided for getData: " << role;
+            throw std::invalid_argument(err.str());
+        }
     } else {
-        throw std::invalid_argument("Invalid field for Person");
+        throw std::invalid_argument("Invalid field for Person: " + field.toStdString());
     }
 
     return data;
+}
+
+std::shared_ptr<IncomePeriod> Person::getIncomePeriod() const {
+    return m_incomePeriod;
 }

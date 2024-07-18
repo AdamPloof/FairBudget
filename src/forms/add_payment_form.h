@@ -11,6 +11,7 @@ namespace Ui {
 class EntityInterface;
 class Person;
 class Expense;
+class IncomePeriod;
 
 class AddPaymentForm : public QWidget
 {
@@ -38,6 +39,7 @@ private:
     void setExpenseOptions();
     std::shared_ptr<Person> fetchPerson(int id);
     std::shared_ptr<Expense> fetchExpense(int id);
+    std::shared_ptr<IncomePeriod> fetchIncomePeriod(int id);
 
     Ui::AddPaymentForm *ui;
     double m_selectedExpenseAmt;

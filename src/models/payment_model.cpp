@@ -6,8 +6,9 @@
 
 #include "payment_model.h"
 #include "../services/entity_manager.h"
-#include "../entities/payment.h"
 #include "../entities/entity_interface.h"
+#include "../entities/payment.h"
+#include "../entities/income_period.h"
 
 // TODO: prevent adding more payments than expenses and prevent over-paying expenses
 
@@ -28,17 +29,20 @@ void PaymentModel::load() {
         "    pmt.paid_by AS person_id, "
         "    prsn.name AS person_name, "
         "    prsn.income AS person_income, "
-        "    prsn.income_period AS person_income_period, "
+        "    prsn.income_period AS ip_id, "
+        "    ip.period AS ip_period, "
+        "    ip.label AS ip_label, "
         "    pmt.expense AS expense_id, "
         "    exp.description AS expense_description, "
         "    exp.amount AS expense_amount, "
         "    pmt.amount "
         "FROM payment pmt "
         "LEFT JOIN person prsn ON pmt.paid_by = prsn.id "
-        "LEFT JOIN expense exp ON pmt.expense = exp.id";
+        "LEFT JOIN expense exp ON pmt.expense = exp.id"
+        "LEFT JOIN income_period ip ON prsn.income_period = ip.id";
     QSqlQuery q = QSqlQuery(qStr);
     while (q.next()) {
-        makePayment(&q);
+        buildPayment(&q);
         qDebug() << "Load payment: " << q.value(0).toString();
     }
 
@@ -131,7 +135,6 @@ bool PaymentModel::removeRows(int row, int count, const QModelIndex &parent) {
 }
 
 void PaymentModel::addPayment(std::shared_ptr<EntityInterface> payment) {
-    // TODO write insert payment query
     QSqlQuery q;
     q.prepare("INSERT INTO payment (paid_by, expense, amount) VALUES (:paid_by, :expense, :amount) RETURNING id");
     q.bindValue(":paid_by", payment->getData("paid_by", Qt::UserRole));
@@ -189,32 +192,40 @@ std::shared_ptr<EntityInterface> PaymentModel::getRow(int row) {
 /**
  * Query result columns:
  * 
- * 0 pmt.id
- * 1 pmt.paid_by AS person_id
- * 2 prsn.name AS person_name
- * 3 prsn.income AS person_income
- * 4 prsn.income_period AS person_income_period
- * 5 pmt.expense AS expense_id
- * 6 exp.description AS expense_description
- * 7 exp.amount AS expense_amount
- * 8 pmt.amount
+ * 0  pmt.id
+ * 1  person_id
+ * 2  person_name
+ * 3  person_income
+ * 4  ip_id
+ * 5  ip_period
+ * 6  ip_label
+ * 7  expense_id
+ * 8  expense_description
+ * 9  expense_amount
+ * 10 pmt.amount
  */
-void PaymentModel::makePayment(QSqlQuery* q) {
+void PaymentModel::buildPayment(QSqlQuery* q) {
         std::shared_ptr<Payment> pmt = std::make_shared<Payment>(Payment());
         pmt->setData("id", q->value(0).toInt());
-        pmt->setData("amount", q->value(8).toFloat());
+        pmt->setData("amount", q->value(10).toDouble());
 
         std::shared_ptr<Expense> exp = std::make_shared<Expense>(Expense());
-        exp->setData("id", q->value(5).toInt());
-        exp->setData("description", q->value(6).toString());
-        exp->setData("amount", q->value(7).toFloat());
+        exp->setData("id", q->value(7).toInt());
+        exp->setData("description", q->value(8).toString());
+        exp->setData("amount", q->value(9).toDouble());
         pmt->setExpense(exp);
 
         std::shared_ptr<Person> person = std::make_shared<Person>(Person());
         person->setData("id", q->value(1).toInt());
         person->setData("name", q->value(2).toString());
-        person->setData("income", q->value(3).toFloat());
-        person->setData("income_period", q->value(4).toString());
+        person->setData("income", q->value(3).toDouble());
+
+        std::shared_ptr<IncomePeriod> ip = std::make_shared<IncomePeriod>(IncomePeriod());
+        ip->setData("id", q->value(4).toInt());
+        ip->setData("period", q->value(5).toString());
+        ip->setData("label", q->value(6).toString());
+
+        person->setIncomePeriod(ip);
         pmt->setPaidBy(person);
 
         m_payments.push_back(pmt);

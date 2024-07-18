@@ -49,31 +49,7 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item alignment="Qt::AlignBottom">
-          <widget class="QComboBox" name="periodSelect">
-           <property name="placeholderText">
-            <string/>
-           </property>
-           <item>
-            <property name="text">
-             <string notr="true">Weekly</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string notr="true">Bi-weekly</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string notr="true">Monthly</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string notr="true">Annually</string>
-            </property>
-           </item>
-          </widget>
+          <widget class="QComboBox" name="periodSelect" />
          </item>
         </layout>
        </item>
