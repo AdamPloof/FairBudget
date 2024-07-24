@@ -23,7 +23,6 @@ PaymentModel::PaymentModel(
     
 // }
 
-// TODO: payments don't appear to be loading...
 void PaymentModel::load() {
     QString qStr =
         "SELECT pmt.id, "
