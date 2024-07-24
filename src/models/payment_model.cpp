@@ -23,6 +23,7 @@ PaymentModel::PaymentModel(
     
 // }
 
+// TODO: payments don't appear to be loading...
 void PaymentModel::load() {
     QString qStr =
         "SELECT pmt.id, "
@@ -38,7 +39,7 @@ void PaymentModel::load() {
         "    pmt.amount "
         "FROM payment pmt "
         "LEFT JOIN person prsn ON pmt.paid_by = prsn.id "
-        "LEFT JOIN expense exp ON pmt.expense = exp.id"
+        "LEFT JOIN expense exp ON pmt.expense = exp.id "
         "LEFT JOIN income_period ip ON prsn.income_period = ip.id";
     QSqlQuery q = QSqlQuery(qStr);
     while (q.next()) {

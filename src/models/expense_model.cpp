@@ -28,7 +28,7 @@ void ExpenseModel::load() {
         exp->setData("amount", q.value(2).toDouble());
         m_expenses.push_back(exp);
 
-        qDebug() << "Load item: " << q.value(0).toString();
+        qDebug() << "Load expense: " << q.value(0).toString();
     }
 
     qDebug() << "Expense count: " << m_expenses.count();
