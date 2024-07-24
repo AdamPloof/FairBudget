@@ -27,7 +27,10 @@ void Person::setData(QString field, QVariant val) {
     } else if (field == "income") {
         m_income = val.toDouble();
     } else {
-        throw std::invalid_argument("Invalid field for Person");
+        std::stringstream err;
+        err << "Invalid field for Person: ";
+        err << field.toStdString();
+        throw std::invalid_argument(err.str());
     }
 }
 
@@ -47,7 +50,7 @@ QHash<QString, QVariant> Person::getData(int role) const {
             {"income", m_income},
             {"income_period", m_incomePeriod->getData("label")}
         };
-    } else if (role == Qt::UserRole) {
+    } else if (role == Qt::UserRole || role == Qt::EditRole) {
         return {
             {"id", m_id},
             {"name", m_name},
@@ -72,7 +75,7 @@ QVariant Person::getData(QString field, int role) const {
     } else if (field == "income_period") {
         if (role == Qt::DisplayRole) {
             data = m_incomePeriod->getData("label");
-        } else if (role == Qt::UserRole) {
+        } else if (role == Qt::UserRole || role == Qt::EditRole) {
             data = m_incomePeriod->getData("id");
         } else {
             std::stringstream err;
@@ -80,7 +83,10 @@ QVariant Person::getData(QString field, int role) const {
             throw std::invalid_argument(err.str());
         }
     } else {
-        throw std::invalid_argument("Invalid field for Person: " + field.toStdString());
+        std::stringstream err;
+        err << "Invalid field for Person: ";
+        err << field.toStdString();
+        throw std::invalid_argument(err.str());
     }
 
     return data;

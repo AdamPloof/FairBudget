@@ -16,8 +16,6 @@ class ComboBoxDelegate : public QStyledItemDelegate {
 public:
     ComboBoxDelegate(QObject *parent = nullptr);
 
-    void setOptions(QHash<QString, QVariant> opts);
-
     QWidget* createEditor(
         QWidget *parent,
         const QStyleOptionViewItem &option,
@@ -43,9 +41,10 @@ public:
 
 private:
     bool supports(QVariant data) const;
+    void fetchOptions();
     void setEditorOptions(QComboBox *cb) const;
 
-    QHash<QString, QVariant> m_options;
+    QHash<int, QString> m_options;
 };
 
 #endif // COMBO_BOX_DELEGATE_H

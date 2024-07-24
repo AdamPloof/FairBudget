@@ -6,10 +6,11 @@
 #include <vector>
 #include <memory>
 
+#include "../entities/entity_interface.h"
+
 class QSqlDatabase;
 class QString;
 class ModelInterface;
-class EntityInterface;
 
 class EntityManager {
 
@@ -20,8 +21,13 @@ public:
     static QSqlDatabase& openDb();
     static void closeDb();
 
-    void update(std::shared_ptr<EntityInterface> entity);
-    bool isReady();
+    bool isReady() const;
+    void update(std::shared_ptr<EntityInterface> entity) const;
+
+    template <typename T>
+    std::shared_ptr<T> find(int id) const {
+        throw std::runtime_error("Unsupported type for find");
+    }
 };
 
 #endif // ENTITY_MANAGER_H

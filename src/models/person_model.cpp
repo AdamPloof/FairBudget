@@ -55,7 +55,7 @@ QVariant PersonModel::data(const QModelIndex &index, int role) const {
     ) {
         QString field = Person::fields.at(index.column());
 
-        return m_persons[index.row()]->getData(field);
+        return m_persons[index.row()]->getData(field, role);
     }
 
     return QVariant();
@@ -83,9 +83,19 @@ Qt::ItemFlags PersonModel::flags(const QModelIndex &index) const {
 bool PersonModel::setData(const QModelIndex &index, const QVariant &value, int role) {
     if (index.isValid() && role == Qt::EditRole) {
         QString field = Person::fields.at(index.column());
-        m_persons[index.row()]->setData(field, value);
+        if (field == "income_period") {
+            std::shared_ptr<Person> p = std::dynamic_pointer_cast<Person>(m_persons[index.row()]);
+            if (!p) {
+                return false;
+            }
+            
+            std::shared_ptr<IncomePeriod> ip = m_entityManager->find<IncomePeriod>(value.toInt());
+            p->setIncomePeriod(ip);
+        } else {
+            m_persons[index.row()]->setData(field, value);
+        }
+
         m_entityManager->update(m_persons[index.row()]);
-        
         emit dataChanged(index, index, {role});
 
         return true;

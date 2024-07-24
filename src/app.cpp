@@ -69,7 +69,6 @@ void App::loadTables() {
     m_formatter->format(ui->personTbl);
 
     ComboBoxDelegate *cbDelegate = new ComboBoxDelegate(ui->personTbl);
-    cbDelegate->setOptions({}); // TODO: set the options!
     ui->personTbl->setItemDelegateForColumn(3, cbDelegate);
 
     // Payments

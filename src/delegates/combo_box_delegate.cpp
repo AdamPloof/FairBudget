@@ -1,17 +1,15 @@
+#include <QList>
+#include <QComboBox>
+#include <QSqlQuery>
+#include <QDebug>
+
 #include "combo_box_delegate.h"
 #include "../forms/add_person_form.h"
 
-#include <QList>
-#include <QComboBox>
-#include <QPainter>
-#include <QDebug>
-
 ComboBoxDelegate::ComboBoxDelegate(
     QObject *parent
-) : QStyledItemDelegate(parent) {}
-
-void ComboBoxDelegate::setOptions(QHash<QString, QVariant> opts) {
-    m_options = opts;
+) : QStyledItemDelegate(parent) {
+    fetchOptions();
 }
 
 QWidget* ComboBoxDelegate::createEditor(
@@ -19,7 +17,7 @@ QWidget* ComboBoxDelegate::createEditor(
     const QStyleOptionViewItem &option,
     const QModelIndex &index
 ) const {
-    if (supports(index.data())) {
+    if (supports(index.data(Qt::EditRole))) {
         QComboBox *editor = new QComboBox(parent);
         editor->setAutoFillBackground(true);
         setEditorOptions(editor);
@@ -34,9 +32,9 @@ void ComboBoxDelegate::setEditorData(
     QWidget *editor,
     const QModelIndex &index
 ) const {
-    if (supports(index.data())) {
+    if (supports(index.data(Qt::EditRole))) {
         QComboBox *cbEditor = qobject_cast<QComboBox *>(editor);
-        int idx = cbEditor->findData(index.data());
+        int idx = cbEditor->findData(index.data(Qt::EditRole));
         if (idx == -1) {
             return;
         }
@@ -61,6 +59,7 @@ void ComboBoxDelegate::setModelData(
     const QModelIndex &index
 ) const {
     if (QComboBox *cb = qobject_cast<QComboBox *>(editor)) {
+        qDebug() << "Setting model data for income_period: " << cb->currentData().toInt();
         model->setData(index, cb->currentData());
     } else {
         QStyledItemDelegate::setModelData(editor, model, index);
@@ -68,15 +67,30 @@ void ComboBoxDelegate::setModelData(
 }
 
 bool ComboBoxDelegate::supports(QVariant data) const {
-    QList<QVariant> opts = m_options.values();
+    QList<int> opts = m_options.keys();
 
-    return opts.contains(data) && m_options.size() > 0;
+    return opts.contains(data.toInt()) && m_options.size() > 0;
+}
+
+// TODO: make this more generalizable. Maybe make a "ChoiceFieldDelegate"
+void ComboBoxDelegate::fetchOptions() {
+    QSqlQuery q;
+    q.prepare("SELECT id, label FROM income_period");
+    if (!q.exec()) {
+        qDebug() << "Could not fetch income periods for person table";
+    }
+
+    while (q.next()) {
+        m_options.insert(q.value(0).toInt(), q.value(1).toString());
+    }
 }
 
 void ComboBoxDelegate::setEditorOptions(QComboBox *cb) const {
-    QHash<QString, QVariant>::const_iterator i = m_options.constBegin();
+    QHash<int, QString>::const_iterator i = m_options.constBegin();
     while (i != m_options.constEnd()) {
-        cb->addItem(i.key(), i.value());
+        qDebug() << "Adding option: " << i.value() << " id: " << i.key();
+
+        cb->addItem(i.value(), i.key());
         i++;
     }
 }
