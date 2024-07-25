@@ -13,6 +13,7 @@ add_executable(
   entities/expense_test.cpp
   forms/add_expense_test.cpp
   forms/add_person_test.cpp
+  services/utils_test.cpp
   ${CMAKE_SOURCE_DIR}/src/entities/expense.h
   ${CMAKE_SOURCE_DIR}/src/entities/expense.cpp
   ${CMAKE_SOURCE_DIR}/src/entities/person.h
@@ -21,6 +22,8 @@ add_executable(
   ${CMAKE_SOURCE_DIR}/src/entities/income_period.cpp
   ${CMAKE_SOURCE_DIR}/src/forms/add_expense_form.cpp
   ${CMAKE_SOURCE_DIR}/src/forms/add_person_form.cpp
+  ${CMAKE_SOURCE_DIR}/src/services/utils.h
+  ${CMAKE_SOURCE_DIR}/src/services/utils.cpp
 )
 target_link_libraries(
   fairbudget_tests

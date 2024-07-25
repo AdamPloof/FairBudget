@@ -11,6 +11,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         services/entity_manager.h services/entity_manager.cpp
         services/table_formatter.h services/table_formatter.cpp
+        services/utils.h services/utils.cpp
         entities/entity_interface.h 
         entities/income_period.h entities/income_period.cpp
         entities/expense.h entities/expense.cpp

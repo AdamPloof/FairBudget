@@ -9,6 +9,9 @@
 #include "../entities/entity_interface.h"
 #include "../entities/person.h"
 #include "../entities/income_period.h"
+#include "../services/utils.h"
+
+using namespace FairBudget::utils;
 
 PersonModel::PersonModel(
     std::shared_ptr<EntityManager> em,
@@ -63,7 +66,7 @@ QVariant PersonModel::data(const QModelIndex &index, int role) const {
 
 QVariant PersonModel::headerData(int section, Qt::Orientation orientation, int role) const {
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
-        return Person::fields[section];
+        return sentenceCase(Person::fields[section]);
     }
 
     return QVariant();

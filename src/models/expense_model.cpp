@@ -7,6 +7,9 @@
 #include "../services/entity_manager.h"
 #include "../entities/expense.h"
 #include "../entities/entity_interface.h"
+#include "../services/utils.h"
+
+using namespace FairBudget::utils;
 
 ExpenseModel::ExpenseModel(
     std::shared_ptr<EntityManager> em,
@@ -57,7 +60,7 @@ QVariant ExpenseModel::data(const QModelIndex &index, int role) const {
 
 QVariant ExpenseModel::headerData(int section, Qt::Orientation orientation, int role) const {
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
-        return Expense::fields[section];
+        return sentenceCase(Expense::fields[section]);
     }
 
     return QVariant();

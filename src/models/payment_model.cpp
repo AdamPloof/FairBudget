@@ -9,8 +9,11 @@
 #include "../entities/entity_interface.h"
 #include "../entities/payment.h"
 #include "../entities/income_period.h"
+#include "../services/utils.h"
 
 // TODO: prevent adding more payments than expenses and prevent over-paying expenses
+
+using namespace FairBudget::utils;
 
 PaymentModel::PaymentModel(
     std::shared_ptr<EntityManager> em,
@@ -75,7 +78,7 @@ QVariant PaymentModel::data(const QModelIndex &index, int role) const {
 
 QVariant PaymentModel::headerData(int section, Qt::Orientation orientation, int role) const {
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
-        return Payment::fields[section];
+        return sentenceCase(Payment::fields[section]);
     }
 
     return QVariant();
