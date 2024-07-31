@@ -23,7 +23,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         forms/add_expense_form.h forms/add_expense_form.cpp forms/add_expense_form.ui
         forms/add_person_form.h forms/add_person_form.cpp forms/add_person_form.ui
         forms/add_payment_form.h forms/add_payment_form.cpp forms/add_payment_form.ui
-        delegates/combo_box_delegate.h delegates/combo_box_delegate.cpp
+        delegates/entity_choice_delegate.h delegates/entity_choice_delegate.cpp
+        delegates/entity_options_loader.h delegates/entity_options_loader.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET FairBudget APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

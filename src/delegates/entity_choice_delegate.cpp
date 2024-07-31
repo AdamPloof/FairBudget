@@ -3,16 +3,24 @@
 #include <QSqlQuery>
 #include <QDebug>
 
-#include "combo_box_delegate.h"
+#include "entity_choice_delegate.h"
 #include "../forms/add_person_form.h"
 
-ComboBoxDelegate::ComboBoxDelegate(
+EntityChoiceDelegate::EntityChoiceDelegate(
+    EntityType et,
+    EntityOptionsLoader optionsLoader,
     QObject *parent
-) : QStyledItemDelegate(parent) {
-    fetchOptions();
+) : 
+    QStyledItemDelegate(parent),
+    m_entityType(et),
+    m_optionsLoader(optionsLoader)
+{
+    if (!m_optionsLoader.fetchOptions(m_entityType, m_options)) {
+        throw std::runtime_error("Could not load options for table editor");
+    }
 }
 
-QWidget* ComboBoxDelegate::createEditor(
+QWidget* EntityChoiceDelegate::createEditor(
     QWidget *parent,
     const QStyleOptionViewItem &option,
     const QModelIndex &index
@@ -28,7 +36,7 @@ QWidget* ComboBoxDelegate::createEditor(
     return QStyledItemDelegate::createEditor(parent, option, index);
 }
 
-void ComboBoxDelegate::setEditorData(
+void EntityChoiceDelegate::setEditorData(
     QWidget *editor,
     const QModelIndex &index
 ) const {
@@ -45,7 +53,7 @@ void ComboBoxDelegate::setEditorData(
     QStyledItemDelegate::setEditorData(editor, index);
 }
 
-void ComboBoxDelegate::updateEditorGeometry(
+void EntityChoiceDelegate::updateEditorGeometry(
     QWidget *editor,
     const QStyleOptionViewItem &option,
     const QModelIndex &index
@@ -53,7 +61,7 @@ void ComboBoxDelegate::updateEditorGeometry(
     editor->setGeometry(option.rect);
 }
 
-void ComboBoxDelegate::setModelData(
+void EntityChoiceDelegate::setModelData(
     QWidget *editor,
     QAbstractItemModel *model,
     const QModelIndex &index
@@ -66,26 +74,13 @@ void ComboBoxDelegate::setModelData(
     }
 }
 
-bool ComboBoxDelegate::supports(QVariant data) const {
+bool EntityChoiceDelegate::supports(QVariant data) const {
     QList<int> opts = m_options.keys();
 
     return opts.contains(data.toInt()) && m_options.size() > 0;
 }
 
-// TODO: make this more generalizable. Maybe make a "ChoiceFieldDelegate"
-void ComboBoxDelegate::fetchOptions() {
-    QSqlQuery q;
-    q.prepare("SELECT id, label FROM income_period");
-    if (!q.exec()) {
-        qDebug() << "Could not fetch income periods for person table";
-    }
-
-    while (q.next()) {
-        m_options.insert(q.value(0).toInt(), q.value(1).toString());
-    }
-}
-
-void ComboBoxDelegate::setEditorOptions(QComboBox *cb) const {
+void EntityChoiceDelegate::setEditorOptions(QComboBox *cb) const {
     QHash<int, QString>::const_iterator i = m_options.constBegin();
     while (i != m_options.constEnd()) {
         qDebug() << "Adding option: " << i.value() << " id: " << i.key();

@@ -10,11 +10,18 @@
 #include <QString>
 #include <QVariant>
 
+#include "entity_options_loader.h"
+#include "../entities/entity_interface.h"
+
 class QComboBox;
 
-class ComboBoxDelegate : public QStyledItemDelegate {
+class EntityChoiceDelegate : public QStyledItemDelegate {
 public:
-    ComboBoxDelegate(QObject *parent = nullptr);
+    EntityChoiceDelegate(
+        EntityType et,
+        EntityOptionsLoader optionsLoader,
+        QObject *parent = nullptr
+    );
 
     QWidget* createEditor(
         QWidget *parent,
@@ -41,9 +48,10 @@ public:
 
 private:
     bool supports(QVariant data) const;
-    void fetchOptions();
     void setEditorOptions(QComboBox *cb) const;
 
+    EntityType m_entityType;
+    EntityOptionsLoader m_optionsLoader;
     QHash<int, QString> m_options;
 };
 

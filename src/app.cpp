@@ -8,7 +8,8 @@
 #include "models/expense_model.h"
 #include "models/person_model.h"
 #include "models/payment_model.h"
-#include "delegates/combo_box_delegate.h"
+#include "delegates/entity_choice_delegate.h"
+#include "delegates/entity_options_loader.h"
 
 App::App(std::shared_ptr<EntityManager> em, QWidget *parent)
     : QMainWindow(parent),
@@ -68,13 +69,32 @@ void App::loadTables() {
     ui->personTbl->setModel(m_personModel);
     m_formatter->format(ui->personTbl);
 
-    ComboBoxDelegate *cbDelegate = new ComboBoxDelegate(ui->personTbl);
-    ui->personTbl->setItemDelegateForColumn(3, cbDelegate);
+    EntityOptionsLoader loader;
+    EntityChoiceDelegate *ipSelect = new EntityChoiceDelegate(
+        EntityType::INCOME_PERIOD,
+        loader,
+        ui->personTbl
+    );
+    ui->personTbl->setItemDelegateForColumn(3, ipSelect);
 
     // Payments
     m_paymentModel->load();
     ui->paymentTbl->setModel(m_paymentModel);
     m_formatter->format(ui->paymentTbl);
+
+    EntityChoiceDelegate *personSelect = new EntityChoiceDelegate(
+        EntityType::PERSON,
+        loader,
+        ui->paymentTbl
+    );
+    ui->paymentTbl->setItemDelegateForColumn(1, personSelect);
+
+    EntityChoiceDelegate *expenseSelect = new EntityChoiceDelegate(
+        EntityType::EXPENSE,
+        loader,
+        ui->paymentTbl
+    );
+    ui->paymentTbl->setItemDelegateForColumn(2, expenseSelect);
 }
 
 void App::connectForms() {
