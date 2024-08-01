@@ -95,12 +95,36 @@ Qt::ItemFlags PaymentModel::flags(const QModelIndex &index) const {
     return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 }
 
+/**
+ * When setting paidBy and expense fields, the value received will be the id
+ * of the entity
+ */
 bool PaymentModel::setData(const QModelIndex &index, const QVariant &value, int role) {
     if (index.isValid() && role == Qt::EditRole) {
-        QString field = Payment::fields.at(index.column());        
-        m_payments[index.row()]->setData(field, value);
+        QString field = Payment::fields.at(index.column());
+        if (field == "paid_by") {
+            std::shared_ptr<Payment> p = std::dynamic_pointer_cast<Payment>(m_payments[index.row()]);
+            std::shared_ptr<Person> paidBy = m_entityManager->find<Person>(value.toInt());
+            if (!paidBy) {
+                qDebug() << "No person found for id: " << value.toInt();
+                return false;
+            }
+
+            p->setPaidBy(paidBy);
+        } else if (field == "expense") {
+            std::shared_ptr<Payment> p = std::dynamic_pointer_cast<Payment>(m_payments[index.row()]);
+            std::shared_ptr<Expense> e = m_entityManager->find<Expense>(value.toInt());
+            if (!e) {
+                qDebug() << "No expense found for id: " << value.toInt();
+                return false;
+            }
+
+            p->setExpense(e);
+        } else {
+            m_payments[index.row()]->setData(field, value);
+        }
+
         m_entityManager->update(m_payments[index.row()]);
-        
         emit dataChanged(index, index, {role});
 
         return true;

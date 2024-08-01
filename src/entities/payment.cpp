@@ -50,7 +50,7 @@ QHash<QString, QVariant> Payment::getData(int role) const {
             {"expense", m_expense->getData("description")},
             {"amount", m_amount}
         };
-    } else if (role == Qt::UserRole) {
+    } else if (role == Qt::UserRole || role == Qt::EditRole) {
         return {
             {"id", m_id},
             {"paid_by", m_paidBy->getData("id")},
@@ -72,7 +72,7 @@ QVariant Payment::getData(QString field, int role) const {
     } else if (field == "paid_by") {
         if (role == Qt::DisplayRole) {
             data = m_paidBy->getData("name");
-        } else if (role == Qt::UserRole) {
+        } else if (role == Qt::UserRole || role == Qt::EditRole) {
             data = m_paidBy->getData("id");
         } else {
             std::stringstream err;
@@ -82,7 +82,7 @@ QVariant Payment::getData(QString field, int role) const {
     } else if (field == "expense") {
         if (role == Qt::DisplayRole) {
             data = m_expense->getData("description");
-        } else if (role == Qt::UserRole) {
+        } else if (role == Qt::UserRole || role == Qt::EditRole) {
             data = m_expense->getData("id");
         } else {
             std::stringstream err;

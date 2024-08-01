@@ -114,7 +114,7 @@ std::shared_ptr<Person> EntityManager::find<Person>(int id) const {
         "    i.period AS period_desc, "
         "    i.label AS period_label "
         "FROM person p "
-        "LEFT JOIN income_period i ON p.income_period = i.id"
+        "LEFT JOIN income_period i ON p.income_period = i.id "
         "WHERE p.id = :id";
     QSqlQuery q;
     q.prepare(qStr);
@@ -156,9 +156,9 @@ std::shared_ptr<Payment> EntityManager::find<Payment>(int id) const {
         "    exp.amount AS expense_amount, "
         "    pay.amount "
         "FROM payment pay "
-        "LEFT JOIN person per ON pay.paid_by = per.id"
-        "LEFT JOIN income_period ip ON per.income_period = ip.id"
-        "LEFT JOIN expense exp ON pay.expense = exp.id"
+        "LEFT JOIN person per ON pay.paid_by = per.id "
+        "LEFT JOIN income_period ip ON per.income_period = ip.id "
+        "LEFT JOIN expense exp ON pay.expense = exp.id "
         "WHERE pay.id = :id";
     QSqlQuery q;
     q.prepare(qStr);

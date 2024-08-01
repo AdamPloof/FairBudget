@@ -83,6 +83,10 @@ Qt::ItemFlags PersonModel::flags(const QModelIndex &index) const {
     return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 }
 
+/**
+ * When updating the data for the income_period field, the value will be the id
+ * of income_period entity.
+ */
 bool PersonModel::setData(const QModelIndex &index, const QVariant &value, int role) {
     if (index.isValid() && role == Qt::EditRole) {
         QString field = Person::fields.at(index.column());
