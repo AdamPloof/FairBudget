@@ -120,6 +120,9 @@ bool PaymentModel::setData(const QModelIndex &index, const QVariant &value, int 
             }
 
             p->setExpense(e);
+            p->setData("amount", e->getData("amount"));
+            // TODO: restrict amount to unpaid amount for selected expense
+
         } else {
             m_payments[index.row()]->setData(field, value);
         }

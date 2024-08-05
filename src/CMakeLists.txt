@@ -10,6 +10,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         services/entity_manager.h services/entity_manager.cpp
+        services/unit_of_work.h services/unit_of_work.cpp
         services/table_formatter.h services/table_formatter.cpp
         services/utils.h services/utils.cpp
         entities/entity_interface.h 

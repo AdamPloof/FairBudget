@@ -8,13 +8,14 @@
 #include <vector>
 
 #include "entity_manager.h"
+#include "unit_of_work.h"
 #include "../entities/entity_interface.h"
 #include "../entities/income_period.h"
 #include "../entities/expense.h"
 #include "../entities/person.h"
 #include "../entities/payment.h"
 
-EntityManager::EntityManager() {}
+EntityManager::EntityManager() : m_unitOfWork(UnitOfWork()) {}
 
 EntityManager::~EntityManager() {
     EntityManager::closeDb();
@@ -235,4 +236,8 @@ std::shared_ptr<IncomePeriod> EntityManager::find<IncomePeriod>(int id) const {
     i->setData("label", q.value(2).toString());
 
     return i;
+}
+
+QList<std::shared_ptr<EntityInterface>> EntityManager::findAll(const EntityType &t) {
+    return m_unitOfWork.getAllByType(t);
 }

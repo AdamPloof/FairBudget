@@ -35,6 +35,10 @@ class PaymentModel : public QAbstractTableModel {
     public slots:
         void addPayment(std::shared_ptr<EntityInterface> payment);
         void removePayment(std::shared_ptr<EntityInterface> payment);
+        // void refreshAmounts();
+
+    // signals:
+    //     void expensesChanged();
 
     private:
         void buildPayment(QSqlQuery* q);

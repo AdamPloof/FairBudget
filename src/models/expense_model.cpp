@@ -23,18 +23,11 @@ ExpenseModel::ExpenseModel(
 // }
 
 void ExpenseModel::load() {
-    QSqlQuery q = QSqlQuery("SELECT id, description, amount FROM expense");
-    while (q.next()) {
-        std::shared_ptr<Expense> exp = std::make_shared<Expense>(Expense());
-        exp->setData("id", q.value(0).toInt());
-        exp->setData("description", q.value(1).toString());
-        exp->setData("amount", q.value(2).toDouble());
-        m_expenses.push_back(exp);
-
-        qDebug() << "Load expense: " << q.value(0).toString();
+    if (!m_entityManager->isReady()) {
+        throw std::runtime_error("EntityManager must be ready when loading models");
     }
 
-    qDebug() << "Expense count: " << m_expenses.count();
+    m_expenses = m_entityManager->findAll(EntityType::EXPENSE);
 }
 
 int ExpenseModel::rowCount(const QModelIndex &parent) const {
