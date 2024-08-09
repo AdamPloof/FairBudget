@@ -25,22 +25,11 @@ PersonModel::PersonModel(
 // }
 
 void PersonModel::load() {
-    QString qStr = 
-        "SELECT p.id, "
-        "    p.name, "
-        "    p.income, "
-        "    i.id AS period_id, "
-        "    i.period AS period_desc, "
-        "    i.label AS period_label "
-        "FROM person p "
-        "LEFT JOIN income_period i ON p.income_period = i.id";
-    QSqlQuery q = QSqlQuery(qStr);
-    while (q.next()) {
-        buildPerson(&q);
-        qDebug() << "Load person: " << q.value(0).toString();
+    if (!m_entityManager->isReady()) {
+        throw std::runtime_error("EntityManager must be ready when loading models");
     }
 
-    qDebug() << "Person count: " << m_persons.count();
+    m_persons = m_entityManager->findAll(EntityType::PERSON);
 }
 
 int PersonModel::rowCount(const QModelIndex &parent) const {
