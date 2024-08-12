@@ -4,11 +4,16 @@
 #include <QHash>
 #include <QList>
 #include <QString>
+#include <QSqlQuery>
 #include <memory>
 #include <unordered_map>
 
 #include "../entities/entity_interface.h"
 
+class Expense;
+class IncomePeriod;
+class Person;
+class Payment;
 
 /**
  * A very basic implementation of a UnitOfWork. Really more of a faux UnitOfWork. If I eventually
@@ -27,19 +32,25 @@ public:
     /**
      * Return a list of pointers to all managed entities of a given type
      */
-    QList<std::shared_ptr<EntityInterface>> getAllByType(const EntityType &t);
+    QList<std::shared_ptr<EntityInterface>> fetchAll(const EntityType &t);
 
     bool doInsert(const EntityInterface &e);
     bool doUpdate(const EntityInterface &e);
     bool doDelete(const EntityInterface &e);
 private:
     using MethodPtr = void (UnitOfWork::*)();
+    using PropertyMap = QHash<int, QString>; 
 
-    void loadEntities(const EntityType &t);
     void fetchExpenses();
     void fetchIncomePeriods();
     void fetchPersons();
     void fetchPayments();
+    std::shared_ptr<EntityInterface> makeOrUpdateEntity(
+        const EntityType &t,
+        int id,
+        const PropertyMap &props,
+        QSqlQuery &q
+    );
 
     /**
      * m_identityMap is the container for all managed entites in the application.

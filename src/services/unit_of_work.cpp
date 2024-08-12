@@ -14,7 +14,10 @@ UnitOfWork::UnitOfWork() : m_fetchMap({
 }) {}
 
 const std::shared_ptr<EntityInterface> UnitOfWork::tryGetById(int id, const EntityType &t) {
-    loadEntities(t);
+    if (!m_identityMap.contains(t)) {
+        fetchAll(t);
+    }
+    
     if (!m_identityMap[t].contains(id)) {
         return nullptr;
     }
@@ -23,12 +26,24 @@ const std::shared_ptr<EntityInterface> UnitOfWork::tryGetById(int id, const Enti
 }
 
 /**
- * There are a number of challenges with this implementation. Mainly:
- *  - when should we re-fetch entities?
- *  - what if something external modifies the database outside of the app? How would we know?
+ * Fetch entities for the given type from the database.
+ * 
+ * This will re-fetch entities even if they're already managed and update with the current
+ * value in the database. While this may be a good thing, it's also kind of inefficient
+ * if nothing has changed -- don't overuse this.
  */
-QList<std::shared_ptr<EntityInterface>> UnitOfWork::getAllByType(const EntityType &t) {
-    loadEntities(t);
+QList<std::shared_ptr<EntityInterface>> UnitOfWork::fetchAll(const EntityType &t) {
+    // if (m_identityMap.contains(t)) {
+    //     return m_identityMap[t].values();
+    // }
+
+    auto fetch = m_fetchMap.find(t);
+    if (fetch == m_fetchMap.end()) {
+        throw std::runtime_error("No fetch method found for entity type");
+    }
+
+    // Fetch the entities if they haven't been loaded yet.
+    (this->*(fetch->second))();
 
     return m_identityMap[t].values();
 }
@@ -45,46 +60,21 @@ bool UnitOfWork::doDelete(const EntityInterface &e) {
     return false;
 }
 
-/**
- * Fetch entities if they haven't been loaded yet. Otherwise return
- * immediately.
- */
-void UnitOfWork::loadEntities(const EntityType &t) {
-    if (m_identityMap.contains(t)) {
-        return;
-    }
-
-    auto fetch = m_fetchMap.find(t);
-    if (fetch == m_fetchMap.end()) {
-        throw std::runtime_error("No fetch method found for entity type");
-    }
-
-    // Fetch the entities if they haven't been loaded yet.
-    (this->*(fetch->second))();
-}
-
 void UnitOfWork::fetchExpenses() {
     if (!m_identityMap.contains(EntityType::EXPENSE)) {
         m_identityMap[EntityType::EXPENSE] = QHash<int, std::shared_ptr<EntityInterface>>();
     }
 
     QSqlQuery q = QSqlQuery("SELECT id, description, amount FROM expense");
+    const PropertyMap props = {
+        {1, "description"},
+        {2, "amount"},
+    };
     while (q.next()) {
         int id = q.value(0).toInt();
-        if (m_identityMap[EntityType::EXPENSE].contains(id)) {
-            // Expense is already managed, update with current value
-            m_identityMap[EntityType::EXPENSE][id]->setData("description", q.value(1));
-            m_identityMap[EntityType::EXPENSE][id]->setData("amount", q.value(2));
-        } else {
-            // Expense isn't managed yet
-            std::shared_ptr<Expense> e = std::make_shared<Expense>(Expense());
-            e->setData("id", q.value(0));
-            e->setData("description", q.value(1));
-            e->setData("amount", q.value(2));
-            m_identityMap[EntityType::EXPENSE][e->getId()] = e;
-        }
+        makeOrUpdateEntity(EntityType::EXPENSE, id, props, q);
 
-        qDebug() << "Load expense: " << q.value(0).toString();
+        qDebug() << "Load expense: " << id;
     }
 
     qDebug() << "Expense count: " << m_identityMap[EntityType::EXPENSE].count();
@@ -96,22 +86,15 @@ void UnitOfWork::fetchIncomePeriods() {
     }
 
     QSqlQuery q = QSqlQuery("SELECT id, period, label FROM income_period");
+    const PropertyMap props = {
+        {1, "period"},
+        {2, "label"},
+    };
     while (q.next()) {
         int id = q.value(0).toInt();
-        if (m_identityMap[EntityType::INCOME_PERIOD].contains(id)) {
-            // IncomePeriod is already managed, update with current value
-            m_identityMap[EntityType::INCOME_PERIOD][id]->setData("period", q.value(1));
-            m_identityMap[EntityType::INCOME_PERIOD][id]->setData("label", q.value(2));            
-        } else {
-            // IncomePeriod isn't managed yet
-            std::shared_ptr<IncomePeriod> p = std::make_shared<IncomePeriod>(IncomePeriod());
-            p->setData("id", q.value(0).toInt());
-            p->setData("period", q.value(1));
-            p->setData("label", q.value(2));
-            m_identityMap[EntityType::INCOME_PERIOD][p->getId()] = p;
-        }
+        makeOrUpdateEntity(EntityType::INCOME_PERIOD, id, props, q);
 
-        qDebug() << "Load IncomePeriod: " << q.value(0).toString();
+        qDebug() << "Load IncomePeriod: " << id;
     }
 
     qDebug() << "IncomePeriod count: " << m_identityMap[EntityType::INCOME_PERIOD].count();
@@ -132,42 +115,27 @@ void UnitOfWork::fetchPersons() {
         "FROM person p "
         "LEFT JOIN income_period i ON p.income_period = i.id";
     QSqlQuery q = QSqlQuery(qStr);
+    const PropertyMap personProps = {
+        {1, "name"},
+        {2, "income"},
+    };
+    const PropertyMap periodProps = {
+        {4, "period"},
+        {5, "label"},
+    };
     while (q.next()) {
-        int periodId = q.value(3).toInt();
-        std::shared_ptr<IncomePeriod> period;
-        if (m_identityMap[EntityType::INCOME_PERIOD].contains(periodId)) {
-            // IncomePeriod is already managed
-            period = std::dynamic_pointer_cast<IncomePeriod>(
-                m_identityMap[EntityType::INCOME_PERIOD].value(periodId)
-            );
-        } else {
-            // IncomePeriod isn't managed yet
-            period = std::make_shared<IncomePeriod>(IncomePeriod());
-            period->setData("id", q.value(3));
-            m_identityMap[EntityType::INCOME_PERIOD][periodId] = period;
-        }
-
-        period->setData("period", q.value(4));
-        period->setData("label", q.value(5));
-
         int personId = q.value(0).toInt();
-        std::shared_ptr<Person> person;
-        if (m_identityMap[EntityType::PERSON].contains(personId)) {
-            // Person is already managed
-            person = std::dynamic_pointer_cast<Person>(
-                m_identityMap[EntityType::PERSON][personId]
-            );
-        } else {
-            // Person is not managed yet
-            person = std::make_shared<Person>(Person());
-            person->setData("id", q.value(0));
-            m_identityMap[EntityType::PERSON][personId] = person;
-        }
-        person->setData("name", q.value(1));
-        person->setData("income", q.value(2));
+        std::shared_ptr<Person> person = std::dynamic_pointer_cast<Person>(
+            makeOrUpdateEntity(EntityType::PERSON, personId, personProps, q)
+        );
+
+        int periodId = q.value(3).toInt();
+        std::shared_ptr<IncomePeriod> period = std::dynamic_pointer_cast<IncomePeriod>(
+            makeOrUpdateEntity(EntityType::INCOME_PERIOD, periodId, periodProps, q)
+        );
         person->setIncomePeriod(period);
 
-        qDebug() << "Load person: " << q.value(0).toString();
+        qDebug() << "Load Person: " << personId;
     }
 
     qDebug() << "Person count: " << m_identityMap[EntityType::PERSON].count();
@@ -211,79 +179,86 @@ void UnitOfWork::fetchPayments() {
      * 9  expense_amount
      * 10 pmt.amount
      */
+    const PropertyMap paymentProps = {
+        {10, "amount"},
+    };
+    const PropertyMap expenseProps = {
+        {8, "description"},
+        {9, "amount"},
+    };
+    const PropertyMap personProps = {
+        {2, "name"},
+        {3, "income"},
+    };
+    const PropertyMap periodProps = {
+        {5, "period"},
+        {6, "label"},
+    };
     while (q.next()) {
-        int periodId = q.value(4).toInt();
-        std::shared_ptr<IncomePeriod> period;
-        if (m_identityMap[EntityType::INCOME_PERIOD].contains(periodId)) {
-            // IncomePeriod is already managed
-            period = std::dynamic_pointer_cast<IncomePeriod>(
-                m_identityMap[EntityType::INCOME_PERIOD].value(periodId)
-            );
-        } else {
-            // IncomePeriod isn't managed yet
-            period = std::make_shared<IncomePeriod>(IncomePeriod());
-            period->setData("id", q.value(4));
-            m_identityMap[EntityType::INCOME_PERIOD][periodId] = period;
-        }
-
-        period->setData("period", q.value(5));
-        period->setData("label", q.value(6));
-
-        int personId = q.value(1).toInt();
-        std::shared_ptr<Person> person;
-        if (m_identityMap[EntityType::PERSON].contains(personId)) {
-            // Person is already managed
-            person = std::dynamic_pointer_cast<Person>(
-                m_identityMap[EntityType::PERSON][personId]
-            );
-        } else {
-            // Person is not managed yet
-            person = std::make_shared<Person>(Person());
-            person->setData("id", q.value(1));
-            m_identityMap[EntityType::PERSON][personId] = person;
-        }
-
-        person->setData("name", q.value(2));
-        person->setData("income", q.value(3));
-        person->setIncomePeriod(period);
+        int paymentId = q.value(0).toInt();
+        std::shared_ptr<Payment> payment = std::dynamic_pointer_cast<Payment>(
+            makeOrUpdateEntity(EntityType::PAYMENT, paymentId, personProps, q)
+        );
 
         int expenseId = q.value(7).toInt();
-        std::shared_ptr<Expense> expense;
-        if (m_identityMap[EntityType::EXPENSE].contains(expenseId)) {
-            // Expense already managed, update with current value
-            expense = std::dynamic_pointer_cast<Expense>(
-                m_identityMap[EntityType::EXPENSE].value(expenseId)
-            );
-        } else {
-            // Expense not managed yet
-            expense = std::make_shared<Expense>(Expense());
-            expense->setData("id", q.value(7));
-            m_identityMap[EntityType::EXPENSE][expenseId] = expense;
-        }
-
-        expense->setData("description", q.value(8));
-        expense->setData("amount", q.value(9));
-
-        int paymentId = q.value(0).toInt();
-        std::shared_ptr<Payment> payment;
-        if (m_identityMap[EntityType::PAYMENT].contains(paymentId)) {
-            // Payment already managed, update with current value
-            payment = std::dynamic_pointer_cast<Payment>(
-                m_identityMap[EntityType::PAYMENT].value(paymentId)
-            );
-        } else {
-            // Payment not managed yet
-            payment = std::make_shared<Payment>(Payment());
-            payment->setData("id", q.value(0));
-            m_identityMap[EntityType::PAYMENT][paymentId] = payment;
-        }
-
-        payment->setData("amount", q.value(10));
-        payment->setPaidBy(person);
+        std::shared_ptr<Expense> expense = std::dynamic_pointer_cast<Expense>(
+            makeOrUpdateEntity(EntityType::EXPENSE, expenseId, personProps, q)
+        );
         payment->setExpense(expense);
 
-        qDebug() << "Load Payment: " << q.value(0).toString();
+        int personId = q.value(1).toInt();
+        std::shared_ptr<Person> person = std::dynamic_pointer_cast<Person>(
+            makeOrUpdateEntity(EntityType::PERSON, personId, personProps, q)
+        );
+
+        int periodId = q.value(4).toInt();
+        std::shared_ptr<IncomePeriod> period = std::dynamic_pointer_cast<IncomePeriod>(
+            makeOrUpdateEntity(EntityType::INCOME_PERIOD, periodId, periodProps, q)
+        );
+        person->setIncomePeriod(period);
+        payment->setPaidBy(person);
+
+        qDebug() << "Load Person: " << personId;
     }
 
     qDebug() << "Payment count: " << m_identityMap[EntityType::PAYMENT].count();
+}
+
+std::shared_ptr<EntityInterface> UnitOfWork::makeOrUpdateEntity(
+    const EntityType &entityType,
+    int id,
+    const PropertyMap &props,
+    QSqlQuery &q
+) {
+    std::shared_ptr<EntityInterface> entity = nullptr;
+    if (!m_identityMap[entityType].contains(id)) {
+        // Entity isn't managed yet
+        switch (entityType) {
+            case EntityType::EXPENSE:
+                entity = std::make_shared<Expense>(Expense());
+                break;
+            case EntityType::INCOME_PERIOD:
+                entity = std::make_shared<IncomePeriod>(IncomePeriod());
+                break;
+            case EntityType::PERSON:
+                entity = std::make_shared<Person>(Person());
+                break;
+            case EntityType::PAYMENT:
+                entity = std::make_shared<Payment>(Payment());
+                break;
+            default:
+                throw std::runtime_error("Cannot make entity: invalid entity type");
+        }
+        
+        entity->setData("id", id);
+        m_identityMap[entityType][id] = entity;
+    }
+
+    QHashIterator<int, QString> i(props);
+    while(i.hasNext()) {
+        i.next();
+        m_identityMap[entityType][id]->setData(i.value(), q.value(i.key()));
+    }
+
+    return m_identityMap[entityType][id];
 }

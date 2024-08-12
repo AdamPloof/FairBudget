@@ -181,28 +181,3 @@ std::shared_ptr<EntityInterface> PersonModel::getRow(int row) {
 
     return m_persons.at(row);
 }
-
-/**
- * Query result columns:
- * 
- * 0 p.id
- * 1 p.name
- * 2 p.income
- * 3 i.id AS period_id
- * 4 i.period AS period_desc
- * 5 i.label AS period_label
- */
-void PersonModel::buildPerson(QSqlQuery *q) {
-    std::shared_ptr<Person> person = std::make_shared<Person>(Person());
-    person->setData("id", q->value(0).toInt());
-    person->setData("name", q->value(1).toString());
-    person->setData("income", q->value(2).toFloat());
-
-    std::shared_ptr<IncomePeriod> period = std::make_shared<IncomePeriod>(IncomePeriod());
-    period->setData("id", q->value(3).toInt());
-    period->setData("period", q->value(4).toString());
-    period->setData("label", q->value(5).toString());
-    person->setIncomePeriod(period);
-
-    m_persons.push_back(person);
-}

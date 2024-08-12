@@ -239,5 +239,5 @@ std::shared_ptr<IncomePeriod> EntityManager::find<IncomePeriod>(int id) const {
 }
 
 QList<std::shared_ptr<EntityInterface>> EntityManager::findAll(const EntityType &t) {
-    return m_unitOfWork.getAllByType(t);
+    return m_unitOfWork.fetchAll(t);
 }
