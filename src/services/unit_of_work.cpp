@@ -13,9 +13,9 @@ UnitOfWork::UnitOfWork() : m_fetchMap({
     {EntityType::PAYMENT, &UnitOfWork::fetchPayments},
 }) {}
 
-const std::shared_ptr<EntityInterface> UnitOfWork::tryGetById(int id, const EntityType &t) {
+std::shared_ptr<EntityInterface> UnitOfWork::tryGetById(int id, const EntityType &t) {
     if (!m_identityMap.contains(t)) {
-        fetchAll(t);
+        retrieveAll(t);
     }
     
     if (!m_identityMap[t].contains(id)) {
@@ -28,14 +28,13 @@ const std::shared_ptr<EntityInterface> UnitOfWork::tryGetById(int id, const Enti
 /**
  * Fetch entities for the given type from the database.
  * 
- * This will re-fetch entities even if they're already managed and update with the current
- * value in the database. While this may be a good thing, it's also kind of inefficient
- * if nothing has changed -- don't overuse this.
+ * If entities have already been fetched from the database, then return all
+ * managed entities of the given type.
  */
-QList<std::shared_ptr<EntityInterface>> UnitOfWork::fetchAll(const EntityType &t) {
-    // if (m_identityMap.contains(t)) {
-    //     return m_identityMap[t].values();
-    // }
+QList<std::shared_ptr<EntityInterface>> UnitOfWork::retrieveAll(const EntityType &t) {
+    if (m_identityMap.contains(t)) {
+        return m_identityMap[t].values();
+    }
 
     auto fetch = m_fetchMap.find(t);
     if (fetch == m_fetchMap.end()) {
@@ -197,12 +196,12 @@ void UnitOfWork::fetchPayments() {
     while (q.next()) {
         int paymentId = q.value(0).toInt();
         std::shared_ptr<Payment> payment = std::dynamic_pointer_cast<Payment>(
-            makeOrUpdateEntity(EntityType::PAYMENT, paymentId, personProps, q)
+            makeOrUpdateEntity(EntityType::PAYMENT, paymentId, paymentProps, q)
         );
 
         int expenseId = q.value(7).toInt();
         std::shared_ptr<Expense> expense = std::dynamic_pointer_cast<Expense>(
-            makeOrUpdateEntity(EntityType::EXPENSE, expenseId, personProps, q)
+            makeOrUpdateEntity(EntityType::EXPENSE, expenseId, expenseProps, q)
         );
         payment->setExpense(expense);
 

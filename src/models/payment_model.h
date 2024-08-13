@@ -41,8 +41,6 @@ class PaymentModel : public QAbstractTableModel {
     //     void expensesChanged();
 
     private:
-        void buildPayment(QSqlQuery* q);
-
         QList<std::shared_ptr<EntityInterface>> m_payments;
         std::shared_ptr<EntityManager> m_entityManager;
 };

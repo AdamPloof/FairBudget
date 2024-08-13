@@ -24,10 +24,12 @@ public:
     static void closeDb();
 
     bool isReady() const;
-    void update(std::shared_ptr<EntityInterface> entity) const;
+    bool update(std::shared_ptr<EntityInterface> entity) const;
+    bool persist(std::shared_ptr<EntityInterface> entity);
+    bool remove(std::shared_ptr<EntityInterface> entity);
 
     template <typename T>
-    std::shared_ptr<T> find(int id) const {
+    std::shared_ptr<T> find(int id) {
         throw std::runtime_error("Unsupported type for find");
     }
 

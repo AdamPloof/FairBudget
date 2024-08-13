@@ -1,6 +1,5 @@
 #include <QList>
 #include <QString>
-#include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
 
@@ -129,21 +128,9 @@ bool PersonModel::removeRows(int row, int count, const QModelIndex &parent) {
 }
 
 void PersonModel::addPerson(std::shared_ptr<EntityInterface> person) {
-    QSqlQuery q;
-    q.prepare("INSERT INTO person (name, income, income_period) VALUES (:name, :income, :income_period) RETURNING id");
-    q.bindValue(":name", person->getData("name", Qt::UserRole).toString());
-    q.bindValue(":income", person->getData("income", Qt::UserRole).toDouble());
-    q.bindValue(":income_period", person->getData("income_period", Qt::UserRole).toInt());
-
-    if (q.exec() == false) {
-        // TODO: handle error
-        qDebug() << "Failed to insert person: " << person->getData("name");
+    if (!m_entityManager->persist(person)) {
         return;
     }
-    q.next();
-    qDebug() << "Inserted: " << q.value(0).toInt();
-
-    person->setData("id", q.value(0));
 
     if (insertRows(rowCount(), 1)) {
         m_persons.replace(rowCount() - 1, person);
@@ -151,16 +138,10 @@ void PersonModel::addPerson(std::shared_ptr<EntityInterface> person) {
 }
 
 void PersonModel::removePerson(std::shared_ptr<EntityInterface> person) {
-    QSqlQuery q;
-    q.prepare("DELETE FROM person WHERE id = :id");
-    q.bindValue(":id", person->getId());
-    if (q.exec() == false) {
-        // TODO: handle error
-        qDebug() << "Failed to delete person: " << person->getId();
+    if (!m_entityManager->remove(person)) {
         return;
     }
 
-    qDebug() << "Delete person: " << person->getId();
     int row = -1;
     for (int i = 0; i < m_persons.size(); i++) {
         if (m_persons.at(i) == person) {

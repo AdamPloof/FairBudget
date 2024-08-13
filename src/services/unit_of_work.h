@@ -27,12 +27,14 @@ public:
      * Return a pointer to the entity of the given type and ID.
      * If the entity is not found, then nullptr is returned
      */
-    const std::shared_ptr<EntityInterface> tryGetById(int id, const EntityType &t);
+    std::shared_ptr<EntityInterface> tryGetById(int id, const EntityType &t);
 
     /**
-     * Return a list of pointers to all managed entities of a given type
+     * Return a list of pointers to all managed entities of a given type,
+     * if there are no entities of the given type yet in the identityMap, then
+     * fetch them from the database.
      */
-    QList<std::shared_ptr<EntityInterface>> fetchAll(const EntityType &t);
+    QList<std::shared_ptr<EntityInterface>> retrieveAll(const EntityType &t);
 
     bool doInsert(const EntityInterface &e);
     bool doUpdate(const EntityInterface &e);

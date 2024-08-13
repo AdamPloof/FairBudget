@@ -1,5 +1,4 @@
 #include <QList>
-#include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
 
@@ -113,20 +112,9 @@ bool ExpenseModel::removeRows(int row, int count, const QModelIndex &parent) {
 }
 
 void ExpenseModel::addExpense(std::shared_ptr<EntityInterface> expense) {
-    QSqlQuery q;
-    q.prepare("INSERT INTO expense (description, amount) VALUES (:description, :amount) RETURNING id");
-    q.bindValue(":description", expense->getData("description").toString());
-    q.bindValue(":amount", expense->getData("amount").toFloat());
-
-    if (q.exec() == false) {
-        // TODO: handle error
-        qDebug() << "Failed to insert expense: " << expense->getData("description");
+    if (!m_entityManager->persist(expense)) {
         return;
     }
-    q.next();
-    qDebug() << "Inserted: " << q.value(0).toInt();
-
-    expense->setData("id", q.value(0));
 
     if (insertRows(rowCount(), 1)) {
         m_expenses.replace(rowCount() - 1, expense);
@@ -134,16 +122,10 @@ void ExpenseModel::addExpense(std::shared_ptr<EntityInterface> expense) {
 }
 
 void ExpenseModel::removeExpense(std::shared_ptr<EntityInterface> expense) {
-    QSqlQuery q;
-    q.prepare("DELETE FROM expense WHERE id = :id");
-    q.bindValue(":id", expense->getId());
-    if (q.exec() == false) {
-        // TODO: handle error
-        qDebug() << "Failed to delete expense: " << expense->getId();
+    if (!m_entityManager->remove(expense)) {
         return;
     }
 
-    qDebug() << "Delete expense: " << expense->getId();
     int row = -1;
     for (int i = 0; i < m_expenses.size(); i++) {
         if (m_expenses.at(i) == expense) {
