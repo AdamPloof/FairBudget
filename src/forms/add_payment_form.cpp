@@ -1,4 +1,4 @@
-#include <QSqlQuery>
+#include <QList>
 #include <QSqlError>
 #include <QComboBox>
 #include <memory>
@@ -6,14 +6,17 @@
 
 #include "add_payment_form.h"
 #include "ui_add_payment_form.h"
+#include "../services/entity_manager.h"
+#include "../entities/entity_interface.h"
 #include "../entities/payment.h"
 #include "../entities/person.h"
 #include "../entities/expense.h"
 #include "../entities/income_period.h"
 
-AddPaymentForm::AddPaymentForm(QWidget *parent)
-    : QWidget(parent)
-    , ui(new Ui::AddPaymentForm)
+AddPaymentForm::AddPaymentForm(std::shared_ptr<EntityManager> em, QWidget *parent)
+    : QWidget(parent),
+    m_entityManager(em),
+    ui(new Ui::AddPaymentForm)
 {
     ui->setupUi(this);
 
@@ -68,10 +71,10 @@ void AddPaymentForm::on_addBtn_clicked() {
     std::shared_ptr<Payment> payment = std::make_shared<Payment>(Payment());
     payment->setData("amount", ui->amountInput->value());
 
-    std::shared_ptr<Expense> exp = fetchExpense(ui->expenseSelect->currentData().toInt());
+    std::shared_ptr<Expense> exp = m_entityManager->find<Expense>(ui->expenseSelect->currentData().toInt());
     payment->setExpense(exp);
 
-    std::shared_ptr<Person> paidBy = fetchPerson(ui->personSelect->currentData().toInt());
+    std::shared_ptr<Person> paidBy = m_entityManager->find<Person>(ui->personSelect->currentData().toInt());
     payment->setPaidBy(paidBy);
 
     emit submitPayment(payment);
@@ -86,22 +89,15 @@ void AddPaymentForm::on_addBtn_clicked() {
  *       that expense.
  */
 void AddPaymentForm::on_selectExpense(int index) {
-    QSqlQuery q;
-    q.prepare("SELECT amount FROM expense WHERE id = :id");
-
     const int expId = ui->expenseSelect->itemData(index).toInt();
-    q.bindValue(":id", expId);
-    qDebug() << "Setting selected expense amount: " << expId;
+    std::shared_ptr<EntityInterface> expense = m_entityManager->find<Expense>(expId);
 
-    if (!q.exec()) {
-        qDebug() << "Query execution error: " << q.lastError().text();
+    qDebug() << "Setting selected expense amount: " << expId;
+    if (expense != nullptr) {
+        m_selectedExpenseAmt = expense->getData("amount").toDouble();
+        qDebug() << "Selected expense amount: " << m_selectedExpenseAmt;
     } else {
-        if (q.first()) {
-            m_selectedExpenseAmt = q.value(0).toDouble();
-            qDebug() << "Selected expens amount: " << m_selectedExpenseAmt;
-        } else {
-            qDebug() << "No record found for id: " << expId;
-        }
+        qDebug() << "No expense found for id: " << expId;
     }
 
     ui->amountInput->setValue(m_selectedExpenseAmt);
@@ -110,93 +106,22 @@ void AddPaymentForm::on_selectExpense(int index) {
 
 void AddPaymentForm::setPersonOptions() {
     ui->personSelect->clear();
-    QSqlQuery q = QSqlQuery("SELECT id, name FROM person");
+    QList<std::shared_ptr<EntityInterface>> persons = m_entityManager->findAll(EntityType::PERSON);
+
     int idx = 0;
-    while (q.next()) {
-        ui->personSelect->insertItem(idx, q.value(1).toString(), q.value(0).toInt());
+    for (const auto &person : persons) {
+        ui->personSelect->insertItem(idx, person->getData("name").toString(), person->getId());
         idx++;
     }
 }
 
 void AddPaymentForm::setExpenseOptions() {
     ui->expenseSelect->clear();
-    QSqlQuery q = QSqlQuery("SELECT id, description FROM expense");
+    QList<std::shared_ptr<EntityInterface>> expenses = m_entityManager->findAll(EntityType::EXPENSE);
+
     int idx = 0;
-    while (q.next()) {
-        ui->expenseSelect->insertItem(idx, q.value(1).toString(), q.value(0).toInt());
+    for (const auto &expense : expenses) {
+        ui->expenseSelect->insertItem(idx, expense->getData("description").toString(), expense->getId());
         idx++;
     }
-}
-
-std::shared_ptr<Person> AddPaymentForm::fetchPerson(int id) {
-    QSqlQuery q;
-    q.prepare("SELECT id, name, income, income_period FROM person WHERE id = :id");
-    q.bindValue(":id", id);
-
-    if (!q.exec()) {
-        qDebug() << "Could not fetch person for id: " << id;
-    }
-
-    std::shared_ptr<Person> p = std::make_shared<Person>(Person());
-    if (q.first()) {
-        p->setData("id", id);
-        p->setData("name", q.value(1));
-        p->setData("income", q.value(2));
-        p->setIncomePeriod(fetchIncomePeriod(q.value(3).toInt()));
-    } else {
-        std::stringstream err;
-        err << "No person found for id: ";
-        err << id;
-        throw std::invalid_argument(err.str());
-    }
-
-    return p;
-}
-
-std::shared_ptr<Expense> AddPaymentForm::fetchExpense(int id) {
-    QSqlQuery q;
-    q.prepare("SELECT id, description, amount FROM expense WHERE id = :id");
-    q.bindValue(":id", id);
-
-    if (!q.exec()) {
-        qDebug() << "Could not fetch expense for id: " << id;
-    }
-
-    std::shared_ptr<Expense> e = std::make_shared<Expense>(Expense());
-    if (q.first()) {
-        e->setData("id", id);
-        e->setData("description", q.value(1));
-        e->setData("amount", q.value(2));
-    } else {
-        std::stringstream err;
-        err << "No expense found for id: ";
-        err << id;
-        throw std::invalid_argument(err.str());
-    }
-
-    return e;
-}
-
-std::shared_ptr<IncomePeriod> AddPaymentForm::fetchIncomePeriod(int id) {
-    QSqlQuery q;
-    q.prepare("SELECT id, period, label FROM income_period WHERE id = :id");
-    q.bindValue(":id", id);
-
-    if (!q.exec()) {
-        qDebug() << "Could not fetch income period for id: " << id;
-    }
-
-    std::shared_ptr<IncomePeriod> ip = std::make_shared<IncomePeriod>(IncomePeriod());
-    if (q.first()) {
-        ip->setData("id", id);
-        ip->setData("period", q.value(1));
-        ip->setData("label", q.value(2));
-    } else {
-        std::stringstream err;
-        err << "No income period found for id: ";
-        err << id;
-        throw std::invalid_argument(err.str());
-    }
-
-    return ip;
 }

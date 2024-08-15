@@ -3,7 +3,6 @@
 
 #include <QAbstractTableModel>
 #include <QSqlDatabase>
-#include <QSqlQuery>
 #include <QString>
 #include <QList>
 #include <memory>

@@ -33,7 +33,8 @@ public:
         throw std::runtime_error("Unsupported type for find");
     }
 
-    QList<std::shared_ptr<EntityInterface>> findAll(const EntityType &t);
+    QList<std::shared_ptr<EntityInterface>> findAll(const EntityType &t, bool forceFetch = false);
+    int foo();
 
 private:
     UnitOfWork m_unitOfWork;

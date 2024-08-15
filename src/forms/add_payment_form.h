@@ -8,6 +8,7 @@ namespace Ui {
     class AddPaymentForm;
 }
 
+class EntityManager;
 class EntityInterface;
 class Person;
 class Expense;
@@ -18,7 +19,7 @@ class AddPaymentForm : public QWidget
     Q_OBJECT
 
 public:
-    explicit AddPaymentForm(QWidget *parent = nullptr);
+    explicit AddPaymentForm(std::shared_ptr<EntityManager> em, QWidget *parent = nullptr);
     ~AddPaymentForm();
 
     bool isValid();
@@ -37,11 +38,9 @@ private slots:
 private:
     void setPersonOptions();
     void setExpenseOptions();
-    std::shared_ptr<Person> fetchPerson(int id);
-    std::shared_ptr<Expense> fetchExpense(int id);
-    std::shared_ptr<IncomePeriod> fetchIncomePeriod(int id);
 
     Ui::AddPaymentForm *ui;
+    std::shared_ptr<EntityManager> m_entityManager;
     double m_selectedExpenseAmt;
 };
 

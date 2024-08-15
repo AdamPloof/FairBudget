@@ -34,7 +34,7 @@ public:
      * if there are no entities of the given type yet in the identityMap, then
      * fetch them from the database.
      */
-    QList<std::shared_ptr<EntityInterface>> retrieveAll(const EntityType &t);
+    QList<std::shared_ptr<EntityInterface>> retrieveAll(const EntityType &t, bool forceFetch = false);
 
     bool doInsert(const EntityInterface &e);
     bool doUpdate(const EntityInterface &e);

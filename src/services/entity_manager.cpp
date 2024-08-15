@@ -83,9 +83,15 @@ bool EntityManager::update(std::shared_ptr<EntityInterface> entity) const {
 }
 
 /**
- * Returns true on successfully inserting entity into the database
+ * Returns true on successfully inserting entity into the database.
+ * First checks if the provided entity already exists in the identity map
+ * and only inserts it into the database if it doesn't already exist.
  */
 bool EntityManager::persist(std::shared_ptr<EntityInterface> entity) {
+    if (entity->getId()) {
+        
+    }
+
     std::vector<QString> fields = entity->entityFields();
     QString columns = " (";
     QString values = "VALUES (";
@@ -169,6 +175,10 @@ std::shared_ptr<Payment> EntityManager::find<Payment>(int id) {
     return std::dynamic_pointer_cast<Payment>(m_unitOfWork.tryGetById(id, EntityType::PAYMENT));
 }
 
-QList<std::shared_ptr<EntityInterface>> EntityManager::findAll(const EntityType &t) {
-    return m_unitOfWork.retrieveAll(t);
+QList<std::shared_ptr<EntityInterface>> EntityManager::findAll(const EntityType &t, bool forceFetch) {
+    return m_unitOfWork.retrieveAll(t, forceFetch);
+}
+
+int EntityManager::foo() {
+    return 42;
 }

@@ -11,6 +11,7 @@ namespace Ui {
 }
 
 class EntityInterface;
+class EntityManager;
 class IncomePeriod;
 
 class AddPersonForm : public QWidget
@@ -18,7 +19,7 @@ class AddPersonForm : public QWidget
     Q_OBJECT
 
 public:
-    explicit AddPersonForm(QWidget *parent = nullptr);
+    explicit AddPersonForm(std::shared_ptr<EntityManager> em, QWidget *parent = nullptr);
     ~AddPersonForm();
 
     void setName(const QString &name);
@@ -38,8 +39,9 @@ private slots:
 
 private:
     void setPeriodOptions();
-    std::shared_ptr<IncomePeriod> fetchIncomePeriod(int id);
+    void clearInputs();
 
+    std::shared_ptr<EntityManager> m_entityManager;
     Ui::AddPersonForm *ui;
 };
 

@@ -20,8 +20,14 @@ add_executable(
   ${CMAKE_SOURCE_DIR}/src/entities/person.cpp
   ${CMAKE_SOURCE_DIR}/src/entities/income_period.h
   ${CMAKE_SOURCE_DIR}/src/entities/income_period.cpp
+  ${CMAKE_SOURCE_DIR}/src/entities/payment.h
+  ${CMAKE_SOURCE_DIR}/src/entities/payment.cpp
   ${CMAKE_SOURCE_DIR}/src/forms/add_expense_form.cpp
   ${CMAKE_SOURCE_DIR}/src/forms/add_person_form.cpp
+  ${CMAKE_SOURCE_DIR}/src/services/entity_manager.h
+  ${CMAKE_SOURCE_DIR}/src/services/entity_manager.cpp
+  ${CMAKE_SOURCE_DIR}/src/services/unit_of_work.h
+  ${CMAKE_SOURCE_DIR}/src/services/unit_of_work.cpp
   ${CMAKE_SOURCE_DIR}/src/services/utils.h
   ${CMAKE_SOURCE_DIR}/src/services/utils.cpp
 )

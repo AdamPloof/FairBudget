@@ -1,15 +1,19 @@
 #include <gtest/gtest.h>
 #include <QApplication>
+#include <memory>
+
 #include "../../src/forms/ui_add_person_form.h"
 #include "../../src/forms/add_person_form.h"
+#include "../../src/services/entity_manager.h"
 
 class AddPersonFormTest : public ::testing::Test {
 protected:
     void SetUp() override {
         int argc = 0;
         char **argv = nullptr;
+        std::shared_ptr<EntityManager> em = std::make_shared<EntityManager>(EntityManager());
         app = new QApplication(argc, argv);
-        form = new AddPersonForm();
+        form = new AddPersonForm(em);
     }
 
     void TearDown() override {
