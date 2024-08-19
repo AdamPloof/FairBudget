@@ -20,6 +20,7 @@ class ExpenseModel;
 class PersonModel;
 class PaymentModel;
 class QItemSelection;
+class QLocale;
 
 class App : public QMainWindow
 {
@@ -46,6 +47,7 @@ private slots:
 
 private:
     void loadTables();
+    void setLocale();
     void connectForms();
     void connectButtons();
 
@@ -59,6 +61,7 @@ private:
     PaymentModel* m_paymentModel;
 
     std::shared_ptr<EntityManager> m_entityManager;
+    std::shared_ptr<QLocale> m_locale;
 };
 
 #endif // APP_H

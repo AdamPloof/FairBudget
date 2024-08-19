@@ -31,6 +31,10 @@ void PersonModel::load() {
     m_persons = m_entityManager->findAll(EntityType::PERSON);
 }
 
+void PersonModel::setLocale(std::shared_ptr<QLocale> locale) {
+    m_locale = locale;
+}
+
 int PersonModel::rowCount(const QModelIndex &parent) const {
     return m_persons.count();
 }
@@ -40,13 +44,21 @@ int PersonModel::columnCount(const QModelIndex &parent) const {
 }
 
 QVariant PersonModel::data(const QModelIndex &index, int role) const {
-    if (
-        (role == Qt::DisplayRole || role == Qt::EditRole)
-        && !m_persons.isEmpty()
-    ) {
-        QString field = Person::fields.at(index.column());
+    if (m_persons.isEmpty()) {
+        return QVariant();
+    }
 
+    if (role == Qt::EditRole) {
+        QString field = Person::fields.at(index.column());
         return m_persons[index.row()]->getData(field, role);
+    } else if (role == Qt::DisplayRole) {
+        QString field = Person::fields.at(index.column());
+        QVariant val = m_persons[index.row()]->getData(field, role);
+        if (field == "income" && m_locale != nullptr) {
+            return m_locale->toCurrencyString(val.toDouble());
+        }
+
+        return val;
     }
 
     return QVariant();

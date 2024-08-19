@@ -33,6 +33,10 @@ void PaymentModel::load() {
     m_payments = m_entityManager->findAll(EntityType::PAYMENT);
 }
 
+void PaymentModel::setLocale(std::shared_ptr<QLocale> locale) {
+    m_locale = locale;
+}
+
 int PaymentModel::rowCount(const QModelIndex &parent) const {
     return m_payments.count();
 }
@@ -42,16 +46,21 @@ int PaymentModel::columnCount(const QModelIndex &parent) const {
 }
 
 QVariant PaymentModel::data(const QModelIndex &index, int role) const {
-    if (role == Qt::DisplayRole && !m_payments.isEmpty()) {
-        QString field = Payment::fields.at(index.column());
-
-        return m_payments[index.row()]->getData(field, Qt::DisplayRole);
+    if (m_payments.isEmpty()) {
+        return QVariant();
     }
 
-    if (role == Qt::EditRole && !m_payments.isEmpty()) {
+    if (role == Qt::EditRole) {
         QString field = Payment::fields.at(index.column());
+        return m_payments[index.row()]->getData(field, role);
+    } else if (role == Qt::DisplayRole) {
+        QString field = Payment::fields.at(index.column());
+        QVariant val = m_payments[index.row()]->getData(field, role);
+        if (field == "amount" && m_locale != nullptr) {
+            return m_locale->toCurrencyString(val.toDouble());
+        }
 
-        return m_payments[index.row()]->getData(field, Qt::EditRole);
+        return val;
     }
 
     return QVariant();

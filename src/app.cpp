@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QTableView>
 #include <QItemSelection>
+#include <QLocale>
 
 #include "app.h"
 #include "./ui_app.h"
@@ -46,6 +47,7 @@ App::~App()
 void App::run() {
     loadDb();
     loadTables();
+    setLocale();
     connectForms();
     connectButtons();
 }
@@ -95,6 +97,14 @@ void App::loadTables() {
         ui->paymentTbl
     );
     ui->paymentTbl->setItemDelegateForColumn(2, expenseSelect);
+}
+
+void App::setLocale() {
+    QLocale::setDefault(QLocale::English);
+    m_locale = std::make_shared<QLocale>(QLocale());
+    m_expenseModel->setLocale(m_locale);
+    m_personModel->setLocale(m_locale);
+    m_paymentModel->setLocale(m_locale);
 }
 
 void App::connectForms() {

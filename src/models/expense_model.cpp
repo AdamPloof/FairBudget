@@ -29,6 +29,10 @@ void ExpenseModel::load() {
     m_expenses = m_entityManager->findAll(EntityType::EXPENSE);
 }
 
+void ExpenseModel::setLocale(std::shared_ptr<QLocale> locale) {
+    m_locale = locale;
+}
+
 int ExpenseModel::rowCount(const QModelIndex &parent) const {
     return m_expenses.count();
 }
@@ -38,13 +42,21 @@ int ExpenseModel::columnCount(const QModelIndex &parent) const {
 }
 
 QVariant ExpenseModel::data(const QModelIndex &index, int role) const {
-    if (
-        (role == Qt::DisplayRole || role == Qt::EditRole)
-        && !m_expenses.isEmpty()
-    ) {
-        QString field = Expense::fields.at(index.column());
+    if (m_expenses.isEmpty()) {
+        return QVariant();
+    }
 
+    if (role == Qt::EditRole) {
+        QString field = Expense::fields.at(index.column());
         return m_expenses[index.row()]->getData(field);
+    } else if (role == Qt::DisplayRole) {
+        QString field = Expense::fields.at(index.column());
+        QVariant val = m_expenses[index.row()]->getData(field);
+        if (field == "amount" && m_locale != nullptr) {
+            return m_locale->toCurrencyString(val.toDouble());
+        }
+
+        return val;
     }
 
     return QVariant();

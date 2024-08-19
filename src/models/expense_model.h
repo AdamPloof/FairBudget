@@ -5,6 +5,7 @@
 #include <QSqlDatabase>
 #include <QString>
 #include <QList>
+#include <QLocale>
 #include <memory>
 
 class EntityInterface;
@@ -21,6 +22,7 @@ class ExpenseModel : public QAbstractTableModel {
         // ~ExpenseModel();
 
         void load();
+        void setLocale(std::shared_ptr<QLocale> locale);
         int rowCount(const QModelIndex &parent = QModelIndex()) const override;
         int columnCount(const QModelIndex &parent = QModelIndex()) const override;
         QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
@@ -38,6 +40,7 @@ class ExpenseModel : public QAbstractTableModel {
     private:
         QList<std::shared_ptr<EntityInterface>> m_expenses;
         std::shared_ptr<EntityManager> m_entityManager;
+        std::shared_ptr<QLocale> m_locale;
 };
 
 #endif // EXPENSE_MODEL_H
