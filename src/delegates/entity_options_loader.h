@@ -3,15 +3,20 @@
 
 #include <QHash>
 #include <QString>
+#include <memory>
 
-#include "../entities/entity_interface.h"
+class EntityManager;
+enum class EntityType;
 
 class EntityOptionsLoader {
 public:
-    bool fetchOptions(EntityType t, QHash<int, QString> &opts) const;
+    EntityOptionsLoader(std::shared_ptr<EntityManager> em);
+    bool fetchOptions(const EntityType &t, QHash<int, QString> &opts) const;
 
 private:
-    QString getEntityQuery(EntityType t) const;
+    QString getLabelField(const EntityType &t) const;
+
+    std::shared_ptr<EntityManager> m_entityManager;
 };
 
 #endif // ENTITY_OPTIONS_LOADER_H

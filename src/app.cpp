@@ -69,7 +69,7 @@ void App::loadTables() {
     ui->personTbl->setModel(m_personModel);
     m_formatter->format(ui->personTbl);
 
-    EntityOptionsLoader loader;
+    EntityOptionsLoader loader = EntityOptionsLoader(m_entityManager);
     EntityChoiceDelegate *ipSelect = new EntityChoiceDelegate(
         EntityType::INCOME_PERIOD,
         loader,

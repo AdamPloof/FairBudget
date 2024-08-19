@@ -36,9 +36,16 @@ public:
      */
     QList<std::shared_ptr<EntityInterface>> retrieveAll(const EntityType &t, bool forceFetch = false);
 
-    bool doInsert(const EntityInterface &e);
-    bool doUpdate(const EntityInterface &e);
-    bool doDelete(const EntityInterface &e);
+    /**
+     * Returns true if the entity was successfully removed, otherwise false
+     */
+    bool remove(std::shared_ptr<EntityInterface> entity);
+
+    /**
+     * Returns true if the entity was successfully removed, otherwise false
+     */
+    bool remove(const EntityType &t, int id);
+
 private:
     using MethodPtr = void (UnitOfWork::*)();
     using PropertyMap = QHash<int, QString>; 

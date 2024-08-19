@@ -1,36 +1,32 @@
-#include <QSqlQuery>
+#include <QList>
+
 #include "entity_options_loader.h"
+#include "../services/entity_manager.h"
+#include "../entities/entity_interface.h"
 
-bool EntityOptionsLoader::fetchOptions(EntityType t, QHash<int, QString> &opts) const {
-    QSqlQuery q;
-    q.prepare(getEntityQuery(t));
-    if (!q.exec()) {
-        qDebug() << "Could not fetch options for entity";
-        return false;
-    }
+EntityOptionsLoader::EntityOptionsLoader(std::shared_ptr<EntityManager> em) : m_entityManager(em) {
 
-    while (q.next()) {
-        opts.insert(q.value(0).toInt(), q.value(1).toString());
+}
+
+bool EntityOptionsLoader::fetchOptions(const EntityType &t, QHash<int, QString> &opts) const {
+    QList<std::shared_ptr<EntityInterface>> entities = m_entityManager->findAll(t);
+    QString labelField = getLabelField(t);
+    for (const auto &e : entities) {
+        opts.insert(e->getId(), e->getData(labelField).toString());
     }
 
     return true;
 }
 
-QString EntityOptionsLoader::getEntityQuery(EntityType t) const {
-    QString q;
+QString EntityOptionsLoader::getLabelField(const EntityType &t) const {
     switch (t) {
         case EntityType::EXPENSE:
-            q = "SELECT id, description FROM expense";
-            break;
-        case EntityType::INCOME_PERIOD:
-            q = "SELECT id, label FROM income_period";
-            break;
+            return "description";
         case EntityType::PERSON:
-            q = "SELECT id, name FROM person";
-            break;
+            return "name";
+        case EntityType::INCOME_PERIOD:
+            return "label";
         default:
-            throw std::invalid_argument("Unable to create options list for entity provided");
+            throw std::invalid_argument("Can't get entity options for the entity type provided");
     }
-
-    return q;
 }

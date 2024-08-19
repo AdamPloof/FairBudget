@@ -47,18 +47,6 @@ QList<std::shared_ptr<EntityInterface>> UnitOfWork::retrieveAll(const EntityType
     return m_identityMap[t].values();
 }
 
-bool UnitOfWork::doInsert(const EntityInterface &e) {
-    return false;
-}
-
-bool UnitOfWork::doUpdate(const EntityInterface &e) {
-    return false;
-}
-
-bool UnitOfWork::doDelete(const EntityInterface &e) {
-    return false;
-}
-
 void UnitOfWork::fetchExpenses() {
     if (!m_identityMap.contains(EntityType::EXPENSE)) {
         m_identityMap[EntityType::EXPENSE] = QHash<int, std::shared_ptr<EntityInterface>>();
@@ -260,4 +248,16 @@ std::shared_ptr<EntityInterface> UnitOfWork::makeOrUpdateEntity(
     }
 
     return m_identityMap[entityType][id];
+}
+
+bool UnitOfWork::remove(std::shared_ptr<EntityInterface> entity) {
+    return remove(entity->entityType(), entity->getId());
+}
+
+bool UnitOfWork::remove(const EntityType &t, int id) {
+    if (!m_identityMap.contains(t)) {
+        return false;
+    }
+
+    return m_identityMap[t].remove(id);
 }

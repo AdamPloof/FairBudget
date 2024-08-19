@@ -151,7 +151,7 @@ bool EntityManager::remove(std::shared_ptr<EntityInterface> entity) {
         return false;
     }
 
-    return true;
+    return m_unitOfWork.remove(entity);
 }
 
 // TODO: add tests for each entity type

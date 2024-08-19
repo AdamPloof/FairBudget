@@ -1,6 +1,5 @@
 #include <QList>
 #include <QComboBox>
-#include <QSqlQuery>
 #include <QDebug>
 
 #include "entity_choice_delegate.h"
