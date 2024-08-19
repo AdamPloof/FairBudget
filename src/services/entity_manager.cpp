@@ -84,61 +84,9 @@ bool EntityManager::update(std::shared_ptr<EntityInterface> entity) const {
 
 /**
  * Returns true on successfully inserting entity into the database.
- * First checks if the provided entity already exists in the identity map
- * and only inserts it into the database if it doesn't already exist.
  */
 bool EntityManager::persist(std::shared_ptr<EntityInterface> entity) {
-    if (entity->getId()) {
-        
-    }
-
-    std::vector<QString> fields = entity->entityFields();
-    QString columns = " (";
-    QString values = "VALUES (";
-    for (auto field : fields) {
-        if (field == "id") {
-            continue;
-        }
-
-        columns.append(field);
-        values.append(":" + field);
-        if (field != fields.back()) {
-            columns.append(", ");
-            values.append(", ");
-        } else {
-            columns.append(") ");
-            values.append(") ");
-        }
-    }
-
-    QString qStr = "INSERT INTO " + entity->entityName();
-    qStr.append(columns);
-    qStr.append(values);
-    qStr.append( "RETURNING id");
-
-    qDebug() << qStr;
-
-    QSqlQuery q;
-    q.prepare(qStr);
-    for (auto field : fields) {
-        if (field == "id") {
-            continue;
-        }
-
-        q.bindValue(":" + field, entity->getData(field, Qt::UserRole));
-        qDebug() << "Binding:" << field << "with value:" << entity->getData(field, Qt::UserRole);
-    }
-
-    if (q.exec() == false) {
-        // TODO: handle error
-        qDebug() << "Failed to insert entity";
-        return false;
-    }
-
-    q.next();
-    entity->setData("id", q.value(0));
-    qDebug() << "Inserted entity: " << q.value(0).toInt();
-    return true;
+    return m_unitOfWork.insert(entity);
 }
 
 bool EntityManager::remove(std::shared_ptr<EntityInterface> entity) {
@@ -154,7 +102,6 @@ bool EntityManager::remove(std::shared_ptr<EntityInterface> entity) {
     return m_unitOfWork.remove(entity);
 }
 
-// TODO: add tests for each entity type
 template <>
 std::shared_ptr<Expense> EntityManager::find<Expense>(int id) {
     return std::dynamic_pointer_cast<Expense>(m_unitOfWork.tryGetById(id, EntityType::EXPENSE));

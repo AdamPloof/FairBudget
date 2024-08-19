@@ -21,10 +21,21 @@ std::vector<QString> Person::entityFields() const {
 
 void Person::setData(QString field, QVariant val) {
     if (field == "id") {
-        m_id = val.toInt();
+        int intVal = val.toInt();
+        if (intVal > 0) {
+            m_id = intVal;
+        }
     } else if (field == "name") {
-        m_name = val.toString();
+        QString strVal = val.toString();
+        if (strVal != "") {
+            m_name = strVal;
+        }
     } else if (field == "income") {
+        // Uncomment to allow for $0.00 income
+        // double dblVal = val.toDouble();
+        // if (dblVal > 0.0) {
+        //     m_income = dblVal;
+        // }
         m_income = val.toDouble();
     } else {
         std::stringstream err;

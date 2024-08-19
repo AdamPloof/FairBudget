@@ -22,9 +22,15 @@ std::vector<QString> Payment::entityFields() const {
 // TODO: handle setting expense and paidBy with ID
 void Payment::setData(QString field, QVariant val) {
     if (field == "id") {
-        m_id = val.toInt();
+        int intVal = val.toInt();
+        if (intVal > 0) {
+            m_id = intVal;
+        }
     } else if (field == "amount") {
-        m_amount = val.toDouble();
+        double dblVal = val.toDouble();
+        if (dblVal > 0.0) {
+            m_amount = dblVal;
+        }
     } else {
         throw std::invalid_argument("Invalid field for Payment");
     }

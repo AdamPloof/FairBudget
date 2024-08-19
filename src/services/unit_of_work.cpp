@@ -1,4 +1,5 @@
 #include <QSqlQuery>
+#include <QDebug>
 
 #include "unit_of_work.h"
 #include "../entities/expense.h"
@@ -45,6 +46,74 @@ QList<std::shared_ptr<EntityInterface>> UnitOfWork::retrieveAll(const EntityType
     (this->*(fetch->second))();
 
     return m_identityMap[t].values();
+}
+
+bool UnitOfWork::insert(std::shared_ptr<EntityInterface> entity) {
+    if (entity->getId()) {
+        // TODO check if entity is already managed and update if so.
+    }
+
+    std::vector<QString> fields = entity->entityFields();
+    QString columns = " (";
+    QString values = "VALUES (";
+    for (auto field : fields) {
+        if (field == "id") {
+            continue;
+        }
+
+        columns.append(field);
+        values.append(":" + field);
+        if (field != fields.back()) {
+            columns.append(", ");
+            values.append(", ");
+        } else {
+            columns.append(") ");
+            values.append(") ");
+        }
+    }
+
+    QString qStr = "INSERT INTO " + entity->entityName();
+    qStr.append(columns);
+    qStr.append(values);
+    qStr.append( "RETURNING id");
+
+    qDebug() << qStr;
+
+    QSqlQuery q;
+    q.prepare(qStr);
+    for (auto field : fields) {
+        if (field == "id") {
+            continue;
+        }
+
+        q.bindValue(":" + field, entity->getData(field, Qt::UserRole));
+        qDebug() << "Binding:" << field << "with value:" << entity->getData(field, Qt::UserRole);
+    }
+
+    if (q.exec() == false) {
+        // TODO: handle error
+        qDebug() << "Failed to insert entity";
+        return false;
+    }
+
+    q.next();
+    entity->setData("id", q.value(0));
+    manageEntity(entity);
+    qDebug() << "Inserted entity: " << q.value(0).toInt();
+
+    return true;
+}
+
+bool UnitOfWork::remove(std::shared_ptr<EntityInterface> entity) {
+    return remove(entity->entityType(), entity->getId());
+}
+
+bool UnitOfWork::remove(const EntityType &t, int id) {
+    if (!m_identityMap.contains(t)) {
+        return false;
+    }
+
+    return m_identityMap[t].remove(id);
 }
 
 void UnitOfWork::fetchExpenses() {
@@ -211,6 +280,18 @@ void UnitOfWork::fetchPayments() {
     qDebug() << "Payment count: " << m_identityMap[EntityType::PAYMENT].count();
 }
 
+void UnitOfWork::manageEntity(std::shared_ptr<EntityInterface> entity) {
+    if (!entity->getId()) {
+        throw std::invalid_argument("Entity must have an ID in order to be managed");
+    }
+
+    if (!m_identityMap.contains(entity->entityType()))     {
+        m_identityMap[entity->entityType()] = QHash<int, std::shared_ptr<EntityInterface>>();
+    }
+
+    m_identityMap[entity->entityType()][entity->getId()] = entity;
+}
+
 std::shared_ptr<EntityInterface> UnitOfWork::makeOrUpdateEntity(
     const EntityType &entityType,
     int id,
@@ -238,7 +319,7 @@ std::shared_ptr<EntityInterface> UnitOfWork::makeOrUpdateEntity(
         }
         
         entity->setData("id", id);
-        m_identityMap[entityType][id] = entity;
+        manageEntity(entity);
     }
 
     QHashIterator<int, QString> i(props);
@@ -248,16 +329,4 @@ std::shared_ptr<EntityInterface> UnitOfWork::makeOrUpdateEntity(
     }
 
     return m_identityMap[entityType][id];
-}
-
-bool UnitOfWork::remove(std::shared_ptr<EntityInterface> entity) {
-    return remove(entity->entityType(), entity->getId());
-}
-
-bool UnitOfWork::remove(const EntityType &t, int id) {
-    if (!m_identityMap.contains(t)) {
-        return false;
-    }
-
-    return m_identityMap[t].remove(id);
 }

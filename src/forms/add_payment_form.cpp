@@ -33,6 +33,10 @@ AddPaymentForm::~AddPaymentForm()
     delete ui;
 }
 
+void AddPaymentForm::setAmount(double amount) {
+    ui->amountInput->setValue(amount);
+}
+
 bool AddPaymentForm::isValid() {
     bool isValid = true;
     if (!ui->personSelect->currentData().isValid()) {
@@ -79,6 +83,7 @@ void AddPaymentForm::on_addBtn_clicked() {
 
     emit submitPayment(payment);
     this->close();
+    clearInputs();
 }
 
 /**
@@ -124,4 +129,8 @@ void AddPaymentForm::setExpenseOptions() {
         ui->expenseSelect->insertItem(idx, expense->getData("description").toString(), expense->getId());
         idx++;
     }
+}
+
+void AddPaymentForm::clearInputs() {
+    setAmount(0.0);
 }

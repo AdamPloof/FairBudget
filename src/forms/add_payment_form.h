@@ -22,6 +22,7 @@ public:
     explicit AddPaymentForm(std::shared_ptr<EntityManager> em, QWidget *parent = nullptr);
     ~AddPaymentForm();
 
+    void setAmount(double amount);
     bool isValid();
 
 signals:
@@ -38,6 +39,7 @@ private slots:
 private:
     void setPersonOptions();
     void setExpenseOptions();
+    void clearInputs();
 
     Ui::AddPaymentForm *ui;
     std::shared_ptr<EntityManager> m_entityManager;

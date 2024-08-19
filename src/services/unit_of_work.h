@@ -37,12 +37,23 @@ public:
     QList<std::shared_ptr<EntityInterface>> retrieveAll(const EntityType &t, bool forceFetch = false);
 
     /**
-     * Returns true if the entity was successfully removed, otherwise false
+     * Insert the newly created entity into the database and add to
+     * managed entities in the identity map
+     * 
+     * First checks if the provided entity already exists in the identity map
+     * and only inserts it into the database if it doesn't already exist.
+     * 
+     * @return true if the entity was inserted successfully, otherwise false
+     */
+    bool insert(std::shared_ptr<EntityInterface> entity);
+
+    /**
+     * @return true if the entity was successfully removed, otherwise false
      */
     bool remove(std::shared_ptr<EntityInterface> entity);
 
     /**
-     * Returns true if the entity was successfully removed, otherwise false
+     * @return true if the entity was successfully removed, otherwise false
      */
     bool remove(const EntityType &t, int id);
 
@@ -54,6 +65,11 @@ private:
     void fetchIncomePeriods();
     void fetchPersons();
     void fetchPayments();
+
+    /**
+     * Add the entity to the m_identityMap if it's not already managed
+     */
+    void manageEntity(std::shared_ptr<EntityInterface> entity);
     std::shared_ptr<EntityInterface> makeOrUpdateEntity(
         const EntityType &t,
         int id,

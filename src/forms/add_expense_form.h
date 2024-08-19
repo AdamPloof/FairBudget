@@ -30,6 +30,8 @@ private slots:
     void on_addBtn_clicked();
 
 private:
+    void clearInputs();
+
     Ui::AddExpenseForm *ui;
 };
 

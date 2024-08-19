@@ -32,6 +32,7 @@ void AddExpenseForm::on_addBtn_clicked() {
     expense->setData("amount", ui->amountInput->value());
     emit submitExpense(expense);
     this->close();
+    clearInputs();
 }
 
 void AddExpenseForm::setDescription(const QString &description) {
@@ -53,4 +54,9 @@ bool AddExpenseForm::isValid() {
     }
 
     return isValid;
+}
+
+void AddExpenseForm::clearInputs() {
+    setDescription("");
+    setAmount(0.0);
 }
