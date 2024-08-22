@@ -15,7 +15,8 @@
 App::App(std::shared_ptr<EntityManager> em, QWidget *parent)
     : QMainWindow(parent),
     m_entityManager(em),
-    ui(new Ui::App)
+    ui(new Ui::App),
+    m_reportBuilder(ReportBuilder(em))
 {
     ui->setupUi(this);
 
@@ -50,6 +51,7 @@ void App::run() {
     setLocale();
     connectForms();
     connectButtons();
+    on_dataChanged();
 }
 
 void App::loadDb() {
@@ -247,4 +249,9 @@ void App::on_paymentSelectionChanged(const QItemSelection &selected, const QItem
         ui->removePaymentBtn->setEnabled(false);
         qDebug() << "Payment selection empty";
     }
+}
+
+void App::on_dataChanged() {
+    qDebug() << "Setting report markdown";
+    ui->summaryReport->setMarkdown(m_reportBuilder.build());
 }

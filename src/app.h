@@ -5,6 +5,7 @@
 #include <memory>
 #include "services/entity_manager.h"
 #include "services/table_formatter.h"
+#include "services/report_builder.h"
 #include "forms/add_expense_form.h"
 #include "forms/add_person_form.h"
 #include "forms/add_payment_form.h"
@@ -44,6 +45,7 @@ private slots:
     void on_expenseSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void on_personSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void on_paymentSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    void on_dataChanged();
 
 private:
     void loadTables();
@@ -62,6 +64,7 @@ private:
 
     std::shared_ptr<EntityManager> m_entityManager;
     std::shared_ptr<QLocale> m_locale;
+    ReportBuilder m_reportBuilder;
 };
 
 #endif // APP_H
