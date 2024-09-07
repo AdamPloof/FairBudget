@@ -48,6 +48,50 @@ QList<std::shared_ptr<EntityInterface>> UnitOfWork::retrieveAll(const EntityType
     return m_identityMap[t].values();
 }
 
+template <>
+QList<std::shared_ptr<Expense>> UnitOfWork::retrieveAll<Expense>(bool forceFetch) {
+    QList<std::shared_ptr<EntityInterface>> expenses = retrieveAll(EntityType::EXPENSE, forceFetch);
+    QList<std::shared_ptr<Expense>> expensesExplicit;
+    for (auto expense : expenses) {
+        expensesExplicit.append(std::dynamic_pointer_cast<Expense>(expense));
+    }
+
+    return expensesExplicit;
+}
+
+template <>
+QList<std::shared_ptr<Person>> UnitOfWork::retrieveAll<Person>(bool forceFetch) {
+    QList<std::shared_ptr<EntityInterface>> persons = retrieveAll(EntityType::PERSON, forceFetch);
+    QList<std::shared_ptr<Person>> personsExplicit;
+    for (auto person : persons) {
+        personsExplicit.append(std::dynamic_pointer_cast<Person>(person));
+    }
+
+    return personsExplicit;
+}
+
+template <>
+QList<std::shared_ptr<Payment>> UnitOfWork::retrieveAll<Payment>(bool forceFetch) {
+    QList<std::shared_ptr<EntityInterface>> payments = retrieveAll(EntityType::PAYMENT, forceFetch);
+    QList<std::shared_ptr<Payment>> paymentsExplicit;
+    for (auto payment : payments) {
+        paymentsExplicit.append(std::dynamic_pointer_cast<Payment>(payment));
+    }
+
+    return paymentsExplicit;
+}
+
+template <>
+QList<std::shared_ptr<IncomePeriod>> UnitOfWork::retrieveAll<IncomePeriod>(bool forceFetch) {
+    QList<std::shared_ptr<EntityInterface>> incomePeriods = retrieveAll(EntityType::INCOME_PERIOD, forceFetch);
+    QList<std::shared_ptr<IncomePeriod>> incomePeriodsExplicit;
+    for (auto incomePeriod : incomePeriods) {
+        incomePeriodsExplicit.append(std::dynamic_pointer_cast<IncomePeriod>(incomePeriod));
+    }
+
+    return incomePeriodsExplicit;
+}
+
 bool UnitOfWork::insert(std::shared_ptr<EntityInterface> entity) {
     if (entity->getId()) {
         // TODO check if entity is already managed and update if so.

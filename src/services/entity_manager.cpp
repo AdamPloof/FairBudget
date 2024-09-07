@@ -126,6 +126,22 @@ QList<std::shared_ptr<EntityInterface>> EntityManager::findAll(const EntityType 
     return m_unitOfWork.retrieveAll(t, forceFetch);
 }
 
-int EntityManager::foo() {
-    return 42;
+template <>
+QList<std::shared_ptr<Expense>> EntityManager::findAll<Expense>(bool forceFetch) {
+    return m_unitOfWork.retrieveAll<Expense>(forceFetch);
+}
+
+template <>
+QList<std::shared_ptr<Person>> EntityManager::findAll<Person>(bool forceFetch) {
+    return m_unitOfWork.retrieveAll<Person>(forceFetch);
+}
+
+template <>
+QList<std::shared_ptr<Payment>> EntityManager::findAll<Payment>(bool forceFetch) {
+    return m_unitOfWork.retrieveAll<Payment>(forceFetch);
+}
+
+template <>
+QList<std::shared_ptr<IncomePeriod>> EntityManager::findAll<IncomePeriod>(bool forceFetch) {
+    return m_unitOfWork.retrieveAll<IncomePeriod>(forceFetch);
 }

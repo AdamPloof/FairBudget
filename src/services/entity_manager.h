@@ -27,14 +27,17 @@ public:
     bool update(std::shared_ptr<EntityInterface> entity) const;
     bool persist(std::shared_ptr<EntityInterface> entity);
     bool remove(std::shared_ptr<EntityInterface> entity);
+    QList<std::shared_ptr<EntityInterface>> findAll(const EntityType &t, bool forceFetch = false);
 
     template <typename T>
     std::shared_ptr<T> find(int id) {
         throw std::runtime_error("Unsupported type for find");
     }
 
-    QList<std::shared_ptr<EntityInterface>> findAll(const EntityType &t, bool forceFetch = false);
-    int foo();
+    template <typename T>
+    QList<std::shared_ptr<T>> findAll(bool forceFetch = false) {
+        throw std::runtime_error("Unsupported type for findAll");
+    };
 
 private:
     UnitOfWork m_unitOfWork;

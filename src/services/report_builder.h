@@ -2,22 +2,55 @@
 #define REPORT_BUILDER_H
 
 #include <QString>
+#include <QList>
+#include <QHash>
 #include <memory>
 
 class EntityManager;
+class EntityInterface;
+class Person;
+class Expense;
+class Payment;
+
+struct PersonalBudget {
+    std::shared_ptr<Person> person;
+    double monthlyIncome = 0.0;
+    double paid = 0.0;
+    double householdExpenses = 0.0;
+    double householdIncome = 0.0;
+    double fairnessRatio = 1.0;
+
+    double owes();
+    double outstanding();
+};
 
 /**
- * ReportBuilder is responsible for generating the markdown
- * used in the owedReport QTextEdit widget. Basically, the results
- * of the owed calculator plus some other basic stats about the expenses
- * and incomes. 
+ * ReportBuilder is responsible calculating totals, the amount owed
+ * for each person and for generating the markdown used in
+ * the owedReport QTextEdit widget.
  */
 class ReportBuilder {
 public:
     ReportBuilder(std::shared_ptr<EntityManager> em);
-    QString build() const;
+    QString build();
+    QHash<int, PersonalBudget> calcBudgets(
+        QList<std::shared_ptr<Person>> persons,
+        QList<std::shared_ptr<Expense>> expenses,
+        QList<std::shared_ptr<Payment>> payments
+    );
+    double calcHouseholdExpenses(QList<std::shared_ptr<Expense>> expenses) const;
+    double calcHouseholdIncome(QList<std::shared_ptr<Person>> persons) const;
+    double calcPaid(std::shared_ptr<Person> person) const;
+    double calcOwed(std::shared_ptr<Person> person) const;
+    double calcMonthlyIncome(std::shared_ptr<Person> person) const;
 
 private:
+    QString totalSection(double householdExpenses, double householdIncome) const;
+    QString expenseSection(QHash<int, PersonalBudget> budgets) const;
+    QString paymentSection(QHash<int, PersonalBudget> budgets) const;
+    QString owedSection(QHash<int, PersonalBudget> budgets) const;
+    QString sectionSeparator() const;
+
     std::shared_ptr<EntityManager> m_entityManager;
 };
 

@@ -37,6 +37,15 @@ public:
     QList<std::shared_ptr<EntityInterface>> retrieveAll(const EntityType &t, bool forceFetch = false);
 
     /**
+     * An alternative way to fetch all entities of a given type for when returning the 
+     * explicit type for the entity is required.
+     */
+    template<typename T>
+    QList<std::shared_ptr<T>> retrieveAll(bool forceFetch = false) {
+        throw std::runtime_error("Unsupported type for retrieveAll");
+    };
+
+    /**
      * Insert the newly created entity into the database and add to
      * managed entities in the identity map
      * 
