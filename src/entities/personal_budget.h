@@ -10,8 +10,8 @@ struct PersonalBudget {
     double paid = 0.0;
     double householdExpenses = 0.0;
     double householdIncome = 0.0;
-    double fairnessRatio = 1.0;
 
+    double incomeRatio() const;
     double owes() const;
     double outstanding() const;
 };

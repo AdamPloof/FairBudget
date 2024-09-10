@@ -1,5 +1,6 @@
 #include <sstream>
 #include <string>
+#include <cmath>
 
 #include "report_builder.h"
 #include "entity_manager.h"
@@ -62,7 +63,6 @@ QHash<int, PersonalBudget> ReportBuilder::calcBudgets(
         budgets[id].householdExpenses = householdExpenses;
         budgets[id].householdIncome = householdIncome;
         budgets[id].monthlyIncome = calcMonthlyIncome(person);
-        budgets[id].fairnessRatio = budgets[id].monthlyIncome / householdIncome;
     }
 
     for (auto payment : payments) {
@@ -137,8 +137,9 @@ QString ReportBuilder::expenseSection(QHash<int, PersonalBudget> budgets) const 
     section << "### Expenses\n";
 
     for (auto budget : budgets) {
+        double incomeRatio = std::round(budget.incomeRatio() * 100 / 100);
         section << "**" << budget.person->getData("name").toString().toStdString() << " owes**: $";
-        section << budget.owes() << " (" << budget.fairnessRatio << "%)  \n";
+        section << budget.owes() << " (" << incomeRatio << "%)  \n";
     }
 
     QString qSection = section.str().c_str();

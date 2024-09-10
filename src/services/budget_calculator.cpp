@@ -78,7 +78,6 @@ Debtor BudgetCalculator::makeDebtor(const PersonalBudget &budget) const {
     debtor.paid = budget.paid;
     debtor.householdExpenses = budget.householdExpenses;
     debtor.householdIncome = budget.householdIncome;
-    debtor.fairnessRatio = budget.fairnessRatio;
 
     debtor.owes = QList<std::shared_ptr<Person>>();
     debtor.paid_back = 0.0;
@@ -93,7 +92,6 @@ Creditor BudgetCalculator::makeCreditor(const PersonalBudget &budget) const {
     creditor.paid = budget.paid;
     creditor.householdExpenses = budget.householdExpenses;
     creditor.householdIncome = budget.householdIncome;
-    creditor.fairnessRatio = budget.fairnessRatio;
     creditor.reimbursed = 0.0;
 
     return creditor;

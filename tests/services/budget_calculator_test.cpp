@@ -3,6 +3,7 @@
 #include <QString>
 #include <memory>
 #include <cmath>
+#include <iostream>
 
 #include "../../src/entities/personal_budget.h"
 #include "../../src/entities/person.h"
@@ -28,32 +29,28 @@ public:
                 2500.00,
                 500,
                 BudgetManager::HOUSEHOLD_EXPENSE,
-                BudgetManager::HOUSEHOLD_INCOME,
-                0.21097
+                BudgetManager::HOUSEHOLD_INCOME
             },
             {
                 makePerson("Paul", 4250.00),
                 4250.00,
                 2000,
                 BudgetManager::HOUSEHOLD_EXPENSE,
-                BudgetManager::HOUSEHOLD_INCOME,
-                0.35864
+                BudgetManager::HOUSEHOLD_INCOME
             },
             {
                 makePerson("Mary", 3000.00),
                 3000.00,
                 250.0,
                 BudgetManager::HOUSEHOLD_EXPENSE,
-                BudgetManager::HOUSEHOLD_INCOME,
-                0.25316
+                BudgetManager::HOUSEHOLD_INCOME
             },
             {
                 makePerson("Tyrone", 2100.00),
                 2100.00,
                 1000.00,
                 BudgetManager::HOUSEHOLD_EXPENSE,
-                BudgetManager::HOUSEHOLD_INCOME,
-                0.17721
+                BudgetManager::HOUSEHOLD_INCOME
             }
         };
 
@@ -105,6 +102,9 @@ TEST(BudgetTest, DebitsAndCreditsBalance) {
     double debits = 0.0;
     for (auto &debt : debts) {
         debits += debt.amount;
+
+        std::cout << debt.debtor->getData("name").toString().toStdString() << " owes ";
+        std::cout << debt.creditor->getData("name").toString().toStdString() << " " << debt.amount << std::endl;
     }
 
     double credits = 0.0;
