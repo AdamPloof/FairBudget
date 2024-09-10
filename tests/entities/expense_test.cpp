@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+ #include <gtest/gtest.h>
 #include <QHash>
 #include <QString>
 #include <QVariant>

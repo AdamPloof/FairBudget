@@ -13,12 +13,14 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         services/unit_of_work.h services/unit_of_work.cpp
         services/table_formatter.h services/table_formatter.cpp
         services/report_builder.h services/report_builder.cpp
+        services/budget_calculator.h services/budget_calculator.cpp
         services/utils.h services/utils.cpp
         entities/entity_interface.h 
         entities/income_period.h entities/income_period.cpp
         entities/expense.h entities/expense.cpp
         entities/person.h entities/person.cpp
         entities/payment.h entities/payment.cpp
+        entities/personal_budget.h entities/personal_budget.cpp
         models/expense_model.h models/expense_model.cpp
         models/person_model.h models/person_model.cpp
         models/payment_model.h models/payment_model.cpp

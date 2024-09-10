@@ -8,14 +8,7 @@
 #include "../entities/person.h"
 #include "../entities/payment.h"
 #include "../entities/income_period.h"
-
-double PersonalBudget::owes() {
-    return householdExpenses * fairnessRatio;
-}
-
-double PersonalBudget::outstanding() {
-    return owes() - paid;
-}
+#include "../entities/personal_budget.h"
 
 ReportBuilder::ReportBuilder(std::shared_ptr<EntityManager> em) : m_entityManager(em) {}
 

@@ -11,18 +11,7 @@ class EntityInterface;
 class Person;
 class Expense;
 class Payment;
-
-struct PersonalBudget {
-    std::shared_ptr<Person> person;
-    double monthlyIncome = 0.0;
-    double paid = 0.0;
-    double householdExpenses = 0.0;
-    double householdIncome = 0.0;
-    double fairnessRatio = 1.0;
-
-    double owes();
-    double outstanding();
-};
+class PersonalBudget;
 
 /**
  * ReportBuilder is responsible calculating totals, the amount owed
