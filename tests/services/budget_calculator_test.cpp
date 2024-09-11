@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <QList>
 #include <QString>
+#include <QDebug>
 #include <memory>
 #include <cmath>
 #include <iostream>
@@ -102,9 +103,6 @@ TEST(BudgetTest, DebitsAndCreditsBalance) {
     double debits = 0.0;
     for (auto &debt : debts) {
         debits += debt.amount;
-
-        std::cout << debt.debtor->getData("name").toString().toStdString() << " owes ";
-        std::cout << debt.creditor->getData("name").toString().toStdString() << " " << debt.amount << std::endl;
     }
 
     double credits = 0.0;
@@ -115,4 +113,36 @@ TEST(BudgetTest, DebitsAndCreditsBalance) {
     double sum = std::round((debits + credits) * 100) / 100;
 
     EXPECT_EQ(sum, 0.0);
+}
+
+TEST(BudgetTest, DebtCountIsCorrect) {
+    BudgetCalculator calculator;
+    BudgetManager manager;
+    QList<PersonalBudget> budgets = manager.buildBudgets();
+    QList<Debt> debts = calculator.calculateDebts(budgets);
+    EXPECT_EQ(debts.size(), 3);
+}
+
+TEST(BudgetTest, DebtsAndPaidEqualExpenses) {
+    BudgetCalculator calculator;
+    BudgetManager manager;
+    QList<PersonalBudget> budgets = manager.buildBudgets();
+    QList<Debt> debts = calculator.calculateDebts(budgets);
+    double totalDebt = 0.0;
+    for (auto &debt : debts) {
+        totalDebt += debt.amount;
+    }
+
+    double totalPaidLessDebt = 0.0;
+    for (auto &budget : budgets) {
+        if (budget.outstanding() <= 0) {
+            totalPaidLessDebt += budget.outstanding() + budget.paid;
+        } else {
+            totalPaidLessDebt += budget.paid;
+        }
+    }
+
+    double totalExpenses = budgets.at(0).householdExpenses;
+
+    EXPECT_EQ(totalDebt + totalPaidLessDebt, totalExpenses);
 }

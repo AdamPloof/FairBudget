@@ -24,16 +24,20 @@ QList<Debt> BudgetCalculator::calculateDebts(const QList<PersonalBudget> &budget
 
     for (auto &debtor : debtors) {
         for (auto &creditor : creditors) {
-            if (creditor.reimbursed >= creditor.outstanding() * -1) {
+            if ((std::round(creditor.reimbursed * 100) / 100) >= creditor.outstanding() * -1) {
                 // this creditor has already been paid back fully
                 continue;
+            }
+
+            double debtorBalance = debtor.outstanding() - debtor.paid_back;
+            if (std::round(debtorBalance * 100) / 100 <= 0.0) {
+                // debtor has paid off full debt
+                break;
             }
 
             Debt debt;
             debt.debtor = debtor.person;
             debt.creditor = creditor.person;
-
-            double debtorBalance = debtor.outstanding() - debtor.paid_back;
             double creditorBalance = (creditor.outstanding() * -1) - creditor.reimbursed;
             if (creditorBalance >= debtorBalance) {
                 // in other words, if the creditor is owed more than the debtor owes,
