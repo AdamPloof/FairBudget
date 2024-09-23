@@ -52,6 +52,7 @@ void App::run() {
     setLocale();
     connectForms();
     connectButtons();
+    watchModels();
     on_dataChanged();
 }
 
@@ -159,6 +160,29 @@ void App::connectButtons() {
         &QItemSelectionModel::selectionChanged,
         this,
         &App::on_paymentSelectionChanged
+    );
+}
+
+void App::watchModels() {
+    QObject::connect(
+        m_expenseModel,
+        &QAbstractItemModel::dataChanged,
+        this,
+        &App::on_dataChanged
+    );
+
+    QObject::connect(
+        m_personModel,
+        &QAbstractItemModel::dataChanged,
+        this,
+        &App::on_dataChanged
+    );
+
+    QObject::connect(
+        m_paymentModel,
+        &QAbstractItemModel::dataChanged,
+        this,
+        &App::on_dataChanged
     );
 }
 

@@ -52,6 +52,7 @@ private:
     void setLocale();
     void connectForms();
     void connectButtons();
+    void watchModels();
 
     Ui::App* ui;
     AddExpenseForm* m_addExpenseForm;
