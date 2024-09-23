@@ -5,6 +5,7 @@
 #include <QList>
 #include <QHash>
 #include <memory>
+#include "budget_calculator.h"
 
 class EntityManager;
 class EntityInterface;
@@ -20,7 +21,7 @@ class PersonalBudget;
  */
 class ReportBuilder {
 public:
-    ReportBuilder(std::shared_ptr<EntityManager> em);
+    ReportBuilder(std::shared_ptr<EntityManager> em, BudgetCalculator calculator);
     QString build();
     QHash<int, PersonalBudget> calcBudgets(
         QList<std::shared_ptr<Person>> persons,
@@ -41,6 +42,7 @@ private:
     QString sectionSeparator() const;
 
     std::shared_ptr<EntityManager> m_entityManager;
+    BudgetCalculator m_calculator;
 };
 
 #endif // REPORT_BUILDER_H

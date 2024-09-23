@@ -11,7 +11,13 @@
 #include "../entities/income_period.h"
 #include "../entities/personal_budget.h"
 
-ReportBuilder::ReportBuilder(std::shared_ptr<EntityManager> em) : m_entityManager(em) {}
+ReportBuilder::ReportBuilder(
+    std::shared_ptr<EntityManager> em,
+    BudgetCalculator calculator
+) : m_entityManager(em),
+    m_calculator(calculator) {
+
+}
 
 // TODO: how to handle when not all bills have been paid?
 QString ReportBuilder::build() {
@@ -127,9 +133,7 @@ QString ReportBuilder::totalSection(double householdExpenses, double householdIn
     section << "**Expenses:** $" << householdExpenses << "  \n";
     section << "**Monthly income:** $" << householdIncome << "  \n";
 
-    QString qSection = section.str().c_str();
-
-    return qSection;
+    return section.str().c_str();
 }
 
 QString ReportBuilder::expenseSection(QHash<int, PersonalBudget> budgets) const {
@@ -137,14 +141,12 @@ QString ReportBuilder::expenseSection(QHash<int, PersonalBudget> budgets) const 
     section << "### Expenses\n";
 
     for (auto budget : budgets) {
-        double incomeRatio = std::round(budget.incomeRatio() * 100 / 100);
+        double incomeRatio = std::round((budget.incomeRatio() * 10000) / 100);
         section << "**" << budget.person->getData("name").toString().toStdString() << " owes**: $";
         section << budget.owes() << " (" << incomeRatio << "%)  \n";
     }
 
-    QString qSection = section.str().c_str();
-
-    return qSection;
+    return section.str().c_str();
 }
 
 QString ReportBuilder::paymentSection(QHash<int, PersonalBudget> budgets) const {
@@ -156,18 +158,28 @@ QString ReportBuilder::paymentSection(QHash<int, PersonalBudget> budgets) const 
         section << budget.paid << "  \n";
     }
 
-    QString qSection = section.str().c_str();
-
-    return qSection;
+    return section.str().c_str();
 }
 
 QString ReportBuilder::owedSection(QHash<int, PersonalBudget> budgets) const {
-    QString section = R"(
-### Owed
-**Ted** owes **Sherry** $250.00  
-)";
+    std::stringstream section;
+    section <<  "### Owed\n";
 
-    return section;
+    QList<Debt> debts = m_calculator.calculateDebts(budgets.values());
+    if (debts.isEmpty()) {
+        // TODO: Display outstanding/unpaid expense amount
+        section << "Not all expenses have been paid  ";
+
+        return section.str().c_str();
+    }
+
+    for (auto debt : debts) {
+        section << "**" << debt.debtor->getData("name").toString().toStdString() << "** owes ";
+        section << "**" << debt.creditor->getData("name").toString().toStdString() << "** $";
+        section << std::round((debt.amount * 100) / 100) << "  \n";
+    }
+
+    return section.str().c_str();
 }
 
 QString ReportBuilder::sectionSeparator() const {

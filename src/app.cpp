@@ -11,12 +11,13 @@
 #include "models/payment_model.h"
 #include "delegates/entity_choice_delegate.h"
 #include "delegates/entity_options_loader.h"
+#include "services/budget_calculator.h"
 
 App::App(std::shared_ptr<EntityManager> em, QWidget *parent)
     : QMainWindow(parent),
     m_entityManager(em),
     ui(new Ui::App),
-    m_reportBuilder(ReportBuilder(em))
+    m_reportBuilder(ReportBuilder(em, BudgetCalculator()))
 {
     ui->setupUi(this);
 
