@@ -52,8 +52,8 @@ void App::run() {
     setLocale();
     connectForms();
     connectButtons();
-    watchModels();
-    on_dataChanged();
+    watchEntities();
+    handleEntityChanged();
 }
 
 void App::loadDb() {
@@ -163,26 +163,29 @@ void App::connectButtons() {
     );
 }
 
-void App::watchModels() {
+void App::watchEntities() {
+    // Expense
     QObject::connect(
         m_expenseModel,
         &QAbstractItemModel::dataChanged,
         this,
-        &App::on_dataChanged
+        &App::on_entityChanged
     );
 
+    // Person
     QObject::connect(
         m_personModel,
         &QAbstractItemModel::dataChanged,
         this,
-        &App::on_dataChanged
+        &App::on_entityChanged
     );
 
+    // Payment
     QObject::connect(
         m_paymentModel,
         &QAbstractItemModel::dataChanged,
         this,
-        &App::on_dataChanged
+        &App::on_entityChanged
     );
 }
 
@@ -276,7 +279,10 @@ void App::on_paymentSelectionChanged(const QItemSelection &selected, const QItem
     }
 }
 
-void App::on_dataChanged() {
-    qDebug() << "Setting report markdown";
+void App::on_entityChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QList<int> &roles) {
+    handleEntityChanged();
+}
+
+void App::handleEntityChanged() {
     ui->summaryReport->setMarkdown(m_reportBuilder.build());
 }

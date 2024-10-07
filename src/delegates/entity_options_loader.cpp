@@ -9,7 +9,7 @@ EntityOptionsLoader::EntityOptionsLoader(std::shared_ptr<EntityManager> em) : m_
 }
 
 bool EntityOptionsLoader::fetchOptions(const EntityType &t, QHash<int, QString> &opts) const {
-    QList<std::shared_ptr<EntityInterface>> entities = m_entityManager->findAll(t);
+    QList<std::shared_ptr<EntityInterface>> entities = m_entityManager->findAll(t, true);
     QString labelField = getLabelField(t);
     for (const auto &e : entities) {
         opts.insert(e->getId(), e->getData(labelField).toString());

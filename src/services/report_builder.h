@@ -36,10 +36,11 @@ public:
 
 private:
     QString totalSection(double householdExpenses, double householdIncome) const;
-    QString expenseSection(QHash<int, PersonalBudget> budgets) const;
-    QString paymentSection(QHash<int, PersonalBudget> budgets) const;
-    QString owedSection(QHash<int, PersonalBudget> budgets) const;
+    QString expenseSection(QHash<int, PersonalBudget> &budgets) const;
+    QString paymentSection(QHash<int, PersonalBudget> &budgets) const;
+    QString owedSection(QHash<int, PersonalBudget> &budgets) const;
     QString sectionSeparator() const;
+    double calcUnpaidExpenses(QHash<int, PersonalBudget> &budgets) const;
 
     std::shared_ptr<EntityManager> m_entityManager;
     BudgetCalculator m_calculator;

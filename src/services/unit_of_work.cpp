@@ -29,7 +29,7 @@ std::shared_ptr<EntityInterface> UnitOfWork::tryGetById(int id, const EntityType
 /**
  * Fetch entities for the given type from the database.
  * 
- * If forceFetch is true and entities have already been fetched from the database, then return all
+ * If forceFetch is false and entities have already been fetched from the database, then return all
  * managed entities of the given type. Otherwise (re)fetch from database.
  */
 QList<std::shared_ptr<EntityInterface>> UnitOfWork::retrieveAll(const EntityType &t, bool forceFetch) {

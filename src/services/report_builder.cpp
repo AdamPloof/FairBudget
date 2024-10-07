@@ -136,7 +136,7 @@ QString ReportBuilder::totalSection(double householdExpenses, double householdIn
     return section.str().c_str();
 }
 
-QString ReportBuilder::expenseSection(QHash<int, PersonalBudget> budgets) const {
+QString ReportBuilder::expenseSection(QHash<int, PersonalBudget> &budgets) const {
     std::stringstream section;
     section << "### Expenses\n";
 
@@ -149,7 +149,7 @@ QString ReportBuilder::expenseSection(QHash<int, PersonalBudget> budgets) const 
     return section.str().c_str();
 }
 
-QString ReportBuilder::paymentSection(QHash<int, PersonalBudget> budgets) const {
+QString ReportBuilder::paymentSection(QHash<int, PersonalBudget> &budgets) const {
     std::stringstream section;
     section << "### Payments\n";
 
@@ -161,14 +161,14 @@ QString ReportBuilder::paymentSection(QHash<int, PersonalBudget> budgets) const 
     return section.str().c_str();
 }
 
-QString ReportBuilder::owedSection(QHash<int, PersonalBudget> budgets) const {
+QString ReportBuilder::owedSection(QHash<int, PersonalBudget> &budgets) const {
     std::stringstream section;
     section <<  "### Owed\n";
 
     QList<Debt> debts = m_calculator.calculateDebts(budgets.values());
     if (debts.isEmpty()) {
-        // TODO: Display outstanding/unpaid expense amount
-        section << "Not all expenses have been paid  ";
+        section << "**Unpaid expenses**:  $";
+        section << std::round((calcUnpaidExpenses(budgets) * 100) / 100);
 
         return section.str().c_str();
     }
@@ -184,4 +184,17 @@ QString ReportBuilder::owedSection(QHash<int, PersonalBudget> budgets) const {
 
 QString ReportBuilder::sectionSeparator() const {
     return "\n\n---\n";
+}
+
+double ReportBuilder::calcUnpaidExpenses(QHash<int, PersonalBudget> &budgets) const {
+    if (budgets.size() == 0) {
+        return 0.0;
+    }
+
+    double totalPaid = 0.0;
+    for (auto budget : budgets) {
+        totalPaid += budget.paid;
+    }
+
+    return budgets.begin()->householdExpenses - totalPaid;
 }

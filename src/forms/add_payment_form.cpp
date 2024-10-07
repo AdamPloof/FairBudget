@@ -90,7 +90,7 @@ void AddPaymentForm::on_addBtn_clicked() {
  * Set the the amount input to the expense amount
  * Set the maximum amount to the selected expense amount
  * 
- * TODO: limit max amount to total of expense amonut minus other payments agains
+ * TODO: limit max amount to total of expense amount minus other payments agains
  *       that expense.
  */
 void AddPaymentForm::on_selectExpense(int index) {
@@ -105,8 +105,10 @@ void AddPaymentForm::on_selectExpense(int index) {
         qDebug() << "No expense found for id: " << expId;
     }
 
-    ui->amountInput->setValue(m_selectedExpenseAmt);
+    // IMPORTANT! Make sure to set the maximum value before the value
+    // to avoid blocking setting the value because of previous maximum
     ui->amountInput->setMaximum(m_selectedExpenseAmt);
+    ui->amountInput->setValue(m_selectedExpenseAmt);
 }
 
 void AddPaymentForm::setPersonOptions() {
@@ -126,6 +128,7 @@ void AddPaymentForm::setExpenseOptions() {
 
     int idx = 0;
     for (const auto &expense : expenses) {
+        qDebug() << "Inserting expense: " << expense->getId() << " at position: " << idx;
         ui->expenseSelect->insertItem(idx, expense->getData("description").toString(), expense->getId());
         idx++;
     }

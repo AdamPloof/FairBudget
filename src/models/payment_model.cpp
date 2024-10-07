@@ -135,6 +135,8 @@ bool PaymentModel::insertRows(int row, int count, const QModelIndex &parent) {
     m_payments.push_back(nullptr);
     endInsertRows();
 
+    emit dataChanged(parent, parent, {Qt::EditRole});
+
     return true;
 }
 
@@ -150,6 +152,7 @@ bool PaymentModel::removeRows(int row, int count, const QModelIndex &parent) {
     }
 
     endRemoveRows();
+    emit dataChanged(parent, parent, {Qt::EditRole});
 
     return true;
 }

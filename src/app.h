@@ -6,6 +6,7 @@
 #include "services/entity_manager.h"
 #include "services/table_formatter.h"
 #include "services/report_builder.h"
+#include "entities/entity_interface.h"
 #include "forms/add_expense_form.h"
 #include "forms/add_person_form.h"
 #include "forms/add_payment_form.h"
@@ -45,14 +46,15 @@ private slots:
     void on_expenseSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void on_personSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void on_paymentSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-    void on_dataChanged();
+    void on_entityChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QList<int> &roles = QList<int>());
 
 private:
     void loadTables();
     void setLocale();
     void connectForms();
     void connectButtons();
-    void watchModels();
+    void watchEntities();
+    void handleEntityChanged();
 
     Ui::App* ui;
     AddExpenseForm* m_addExpenseForm;

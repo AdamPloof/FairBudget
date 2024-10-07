@@ -119,6 +119,7 @@ bool PersonModel::insertRows(int row, int count, const QModelIndex &parent) {
     beginInsertRows(parent, row, row + count - 1);
     m_persons.push_back(nullptr);
     endInsertRows();
+    emit dataChanged(parent, parent, {Qt::EditRole});
 
     return true;
 }
@@ -135,6 +136,7 @@ bool PersonModel::removeRows(int row, int count, const QModelIndex &parent) {
     }
 
     endRemoveRows();
+    emit dataChanged(parent, parent, {Qt::EditRole});
 
     return true;
 }
