@@ -5,6 +5,7 @@
 
 namespace FairBudget::utils {
     QString sentenceCase(QString str);
+    QString asCurrency(double val);
 }
 
 #endif // UTILS_H

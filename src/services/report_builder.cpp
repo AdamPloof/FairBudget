@@ -4,12 +4,15 @@
 
 #include "report_builder.h"
 #include "entity_manager.h"
+#include "utils.h"
 #include "../entities/entity_interface.h"
 #include "../entities/expense.h"
 #include "../entities/person.h"
 #include "../entities/payment.h"
 #include "../entities/income_period.h"
 #include "../entities/personal_budget.h"
+
+using namespace FairBudget::utils;
 
 ReportBuilder::ReportBuilder(
     std::shared_ptr<EntityManager> em,
@@ -130,8 +133,8 @@ double ReportBuilder::calcMonthlyIncome(std::shared_ptr<Person> person) const {
 QString ReportBuilder::totalSection(double householdExpenses, double householdIncome) const {
     std::stringstream section;
     section << "### Totals\n";
-    section << "**Expenses:** $" << householdExpenses << "  \n";
-    section << "**Monthly income:** $" << householdIncome << "  \n";
+    section << "**Expenses:** " << asCurrency(householdExpenses).toStdString() << "  \n";
+    section << "**Monthly income:** " << asCurrency(householdIncome).toStdString() << "  \n";
 
     return section.str().c_str();
 }
@@ -142,8 +145,8 @@ QString ReportBuilder::expenseSection(QHash<int, PersonalBudget> &budgets) const
 
     for (auto budget : budgets) {
         double incomeRatio = std::round((budget.incomeRatio() * 10000) / 100);
-        section << "**" << budget.person->getData("name").toString().toStdString() << " owes**: $";
-        section << budget.owes() << " (" << incomeRatio << "%)  \n";
+        section << "**" << budget.person->getData("name").toString().toStdString() << " owes**: ";
+        section << asCurrency(budget.owes()).toStdString() << " (" << incomeRatio << "%)  \n";
     }
 
     return section.str().c_str();
@@ -154,8 +157,8 @@ QString ReportBuilder::paymentSection(QHash<int, PersonalBudget> &budgets) const
     section << "### Payments\n";
 
     for (auto budget : budgets) {
-        section << "**" << budget.person->getData("name").toString().toStdString() << " paid**: $";
-        section << budget.paid << "  \n";
+        section << "**" << budget.person->getData("name").toString().toStdString() << " paid**: ";
+        section << asCurrency(budget.paid).toStdString() << "  \n";
     }
 
     return section.str().c_str();
@@ -167,16 +170,16 @@ QString ReportBuilder::owedSection(QHash<int, PersonalBudget> &budgets) const {
 
     QList<Debt> debts = m_calculator.calculateDebts(budgets.values());
     if (debts.isEmpty()) {
-        section << "**Unpaid expenses**:  $";
-        section << std::round((calcUnpaidExpenses(budgets) * 100) / 100);
+        section << "**Unpaid expenses**: ";
+        section << asCurrency(calcUnpaidExpenses(budgets)).toStdString();
 
         return section.str().c_str();
     }
 
     for (auto debt : debts) {
         section << "**" << debt.debtor->getData("name").toString().toStdString() << "** owes ";
-        section << "**" << debt.creditor->getData("name").toString().toStdString() << "** $";
-        section << std::round((debt.amount * 100) / 100) << "  \n";
+        section << "**" << debt.creditor->getData("name").toString().toStdString() << "** ";
+        section << asCurrency(debt.amount).toStdString() << "  \n";
     }
 
     return section.str().c_str();
