@@ -37,6 +37,9 @@ class PersonModel : public QAbstractTableModel {
         void addPerson(std::shared_ptr<EntityInterface> person);
         void removePerson(std::shared_ptr<EntityInterface> person);
 
+    signals:
+        void relatedPaymentsRemoved(QList<int> paymentIds);
+
     private:
         QList<std::shared_ptr<EntityInterface>> m_persons;
         std::shared_ptr<EntityManager> m_entityManager;

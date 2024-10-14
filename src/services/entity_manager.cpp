@@ -145,3 +145,23 @@ template <>
 QList<std::shared_ptr<IncomePeriod>> EntityManager::findAll<IncomePeriod>(bool forceFetch) {
     return m_unitOfWork.retrieveAll<IncomePeriod>(forceFetch);
 }
+
+QList<int> EntityManager::cascadeRemovePayments(std::shared_ptr<EntityInterface> entity) {
+    QList<std::shared_ptr<Payment>> payments = findAll<Payment>();
+    EntityType et = entity->entityType();
+    int entityId = entity->getId();
+    QList<int> removed;
+    for (auto p : payments) {
+        if (et == EntityType::PERSON && p->getPaidBy()->getId() == entityId) {
+            if (remove(p)) {
+                removed.append(p->getId());
+            }
+        } else if (et == EntityType::EXPENSE && p->getExpense()->getId() == entityId) {
+            if (remove(p)) {
+                removed.append(p->getId());
+            }
+        }
+    }
+
+    return removed;
+}

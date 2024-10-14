@@ -141,6 +141,11 @@ void ExpenseModel::removeExpense(std::shared_ptr<EntityInterface> expense) {
         return;
     }
 
+    QList<int> removedPmtIds = m_entityManager->cascadeRemovePayments(expense);
+    if (!removedPmtIds.empty()) {
+        emit relatedPaymentsRemoved(removedPmtIds);
+    }
+
     int row = -1;
     for (int i = 0; i < m_expenses.size(); i++) {
         if (m_expenses.at(i) == expense) {

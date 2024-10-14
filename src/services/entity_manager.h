@@ -29,6 +29,12 @@ public:
     bool remove(std::shared_ptr<EntityInterface> entity);
     QList<std::shared_ptr<EntityInterface>> findAll(const EntityType &t, bool forceFetch = false);
 
+    /**
+     * Remove payments related to Expenses and Persons when those entities are removed.
+     * Return a list of IDs of any payments that were removed.
+     */
+    QList<int> cascadeRemovePayments(std::shared_ptr<EntityInterface> entity);
+
     template <typename T>
     std::shared_ptr<T> find(int id) {
         throw std::runtime_error("Unsupported type for find");

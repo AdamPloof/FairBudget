@@ -38,7 +38,7 @@ public:
 
     /**
      * An alternative way to fetch all entities of a given type for when returning the 
-     * explicit type for the entity is required.
+     * explicit type of the entity is required.
      */
     template<typename T>
     QList<std::shared_ptr<T>> retrieveAll(bool forceFetch = false) {

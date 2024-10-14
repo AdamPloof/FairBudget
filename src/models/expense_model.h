@@ -37,6 +37,9 @@ class ExpenseModel : public QAbstractTableModel {
         void addExpense(std::shared_ptr<EntityInterface> expense);
         void removeExpense(std::shared_ptr<EntityInterface> expense);
 
+    signals:
+        void relatedPaymentsRemoved(QList<int> paymentIds);
+
     private:
         QList<std::shared_ptr<EntityInterface>> m_expenses;
         std::shared_ptr<EntityManager> m_entityManager;

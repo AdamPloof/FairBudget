@@ -156,6 +156,11 @@ void PersonModel::removePerson(std::shared_ptr<EntityInterface> person) {
         return;
     }
 
+    QList<int> removedPmtIds = m_entityManager->cascadeRemovePayments(person);
+    if (!removedPmtIds.empty()) {
+        emit relatedPaymentsRemoved(removedPmtIds);
+    }
+
     int row = -1;
     for (int i = 0; i < m_persons.size(); i++) {
         if (m_persons.at(i) == person) {

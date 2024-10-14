@@ -53,6 +53,7 @@ void App::run() {
     connectForms();
     connectButtons();
     watchEntities();
+    watchCascadeRemovePayments();
     handleEntityChanged();
 }
 
@@ -186,6 +187,22 @@ void App::watchEntities() {
         &QAbstractItemModel::dataChanged,
         this,
         &App::on_entityChanged
+    );
+}
+
+void App::watchCascadeRemovePayments() {
+    QObject::connect(
+        m_expenseModel,
+        &ExpenseModel::relatedPaymentsRemoved,
+        m_paymentModel,
+        &PaymentModel::cascadeRemove
+    );
+
+    QObject::connect(
+        m_personModel,
+        &PersonModel::relatedPaymentsRemoved,
+        m_paymentModel,
+        &PaymentModel::cascadeRemove
     );
 }
 

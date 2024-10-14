@@ -22,7 +22,6 @@ ReportBuilder::ReportBuilder(
 
 }
 
-// TODO: how to handle when not all bills have been paid?
 QString ReportBuilder::build() {
     QList<std::shared_ptr<Expense>> expenses = m_entityManager->findAll<Expense>();
     QList<std::shared_ptr<Person>> persons = m_entityManager->findAll<Person>();

@@ -54,6 +54,7 @@ private:
     void connectForms();
     void connectButtons();
     void watchEntities();
+    void watchCascadeRemovePayments();
     void handleEntityChanged();
 
     Ui::App* ui;

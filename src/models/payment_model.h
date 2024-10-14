@@ -36,10 +36,15 @@ class PaymentModel : public QAbstractTableModel {
     public slots:
         void addPayment(std::shared_ptr<EntityInterface> payment);
         void removePayment(std::shared_ptr<EntityInterface> payment);
-        // void refreshAmounts();
 
-    // signals:
-    //     void expensesChanged();
+        /**
+         * Called when a related expense or person is removed that had payments
+         * associated with it that also need to be removed.
+         * 
+         * Since cascade removal is handled at the level of the entity manager, handling removal
+         * in this slot involves removing the orphaned rows from the model.
+         */
+        void cascadeRemove(QList<int> ids);
 
     private:
         QList<std::shared_ptr<EntityInterface>> m_payments;

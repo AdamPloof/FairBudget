@@ -185,6 +185,19 @@ void PaymentModel::removePayment(std::shared_ptr<EntityInterface> payment) {
     }
 }
 
+void PaymentModel::cascadeRemove(QList<int> ids) {
+    // While we could remove the rows for each deleted ID, it's easier to just re-load the
+    // entities for the model.
+    beginResetModel();
+    load();
+    endResetModel();
+
+    qDebug() << "Cascade deleted some payments. New payments: ";
+    for (auto p : m_payments) {
+        qDebug() << "Person: " << p->getData("paid_by") << " Expense: " << p->getData("expense");
+    }
+}
+
 std::shared_ptr<EntityInterface> PaymentModel::getRow(int row) {
     if (row < 0 || row > m_payments.size() - 1) {
         return nullptr;
