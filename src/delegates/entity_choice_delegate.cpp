@@ -14,9 +14,7 @@ EntityChoiceDelegate::EntityChoiceDelegate(
     m_entityType(et),
     m_optionsLoader(optionsLoader)
 {
-    if (!m_optionsLoader.fetchOptions(m_entityType, m_options)) {
-        throw std::runtime_error("Could not load options for table editor");
-    }
+
 }
 
 QWidget* EntityChoiceDelegate::createEditor(
@@ -74,14 +72,18 @@ void EntityChoiceDelegate::setModelData(
 }
 
 bool EntityChoiceDelegate::supports(QVariant data) const {
-    QList<int> opts = m_options.keys();
+    QHash<int, QString> opts;
+    m_optionsLoader.fetchOptions(m_entityType, opts);
+    QList<int> optIds = opts.keys();
 
-    return opts.contains(data.toInt()) && m_options.size() > 0;
+    return opts.contains(data.toInt()) && opts.size() > 0;
 }
 
 void EntityChoiceDelegate::setEditorOptions(QComboBox *cb) const {
-    QHash<int, QString>::const_iterator i = m_options.constBegin();
-    while (i != m_options.constEnd()) {
+    QHash<int, QString> opts;
+    m_optionsLoader.fetchOptions(m_entityType, opts);
+    QHash<int, QString>::const_iterator i = opts.constBegin();
+    while (i != opts.constEnd()) {
         qDebug() << "Adding option: " << i.value() << " id: " << i.key();
 
         cb->addItem(i.value(), i.key());

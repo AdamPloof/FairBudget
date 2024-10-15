@@ -52,7 +52,6 @@ private:
 
     EntityType m_entityType;
     EntityOptionsLoader m_optionsLoader;
-    QHash<int, QString> m_options;
 };
 
 #endif // COMBO_BOX_DELEGATE_H
