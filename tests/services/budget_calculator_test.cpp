@@ -146,3 +146,64 @@ TEST(BudgetTest, DebtsAndPaidEqualExpenses) {
 
     EXPECT_EQ(totalDebt + totalPaidLessDebt, totalExpenses);
 }
+
+TEST(BudgetTest, DebtsEqualOwedMinusPaid) {
+    BudgetCalculator calculator;
+    BudgetManager manager;
+    QList<PersonalBudget> budgets = manager.buildBudgets();
+    QList<Debt> debts = calculator.calculateDebts(budgets);
+    double peterDebt = 0.0;
+    double paulDebt = 0.0;
+    double maryDebt = 0.0;
+    double tyroneDebt = 0.0;
+    for (auto &debt : debts) {
+        QString debtorName = debt.debtor->getData("name").toString();
+
+        if (debtorName == "Peter") {
+            peterDebt += debt.amount;
+        } else if (debtorName == "Paul") {
+            paulDebt += debt.amount;
+        } else if (debtorName == "Mary") {
+            maryDebt += debt.amount;
+        } else if (debtorName == "Tyrone") {
+            tyroneDebt += debt.amount;
+        }
+    }
+
+    EXPECT_EQ(std::round(peterDebt * 100) / 100, 291.14);
+    EXPECT_EQ(std::round(paulDebt * 100) / 100, 0.0);
+    EXPECT_EQ(std::round(maryDebt * 100) / 100, 699.37);
+    EXPECT_EQ(std::round(tyroneDebt * 100) / 100, 0.0);
+
+    double paulOwes = -655.06;
+    double tyroneOwes = -335.44;
+}
+
+TEST(BudgetTest, OwedEqualDebts) {
+    BudgetCalculator calculator;
+    BudgetManager manager;
+    QList<PersonalBudget> budgets = manager.buildBudgets();
+    QList<Debt> debts = calculator.calculateDebts(budgets);
+    double peterCredit = 0.0;
+    double paulCredit = 0.0;
+    double maryCredit = 0.0;
+    double tyroneCredit = 0.0;
+    for (auto &debt : debts) {
+        QString creditorName = debt.creditor->getData("name").toString();
+
+        if (creditorName == "Peter") {
+            peterCredit += debt.amount;
+        } else if (creditorName == "Paul") {
+            paulCredit += debt.amount;
+        } else if (creditorName == "Mary") {
+            maryCredit += debt.amount;
+        } else if (creditorName == "Tyrone") {
+            tyroneCredit += debt.amount;
+        }
+    }
+
+    EXPECT_EQ(std::round(peterCredit * 100) / 100, 0.0);
+    EXPECT_EQ(std::round(paulCredit * 100) / 100, 655.06);
+    EXPECT_EQ(std::round(maryCredit * 100) / 100, 0.0);
+    EXPECT_EQ(std::round(tyroneCredit * 100) / 100, 335.44);
+}
