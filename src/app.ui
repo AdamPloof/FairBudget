@@ -71,7 +71,14 @@
        </layout>
       </item>
       <item>
-       <widget class="QTableView" name="expenseTbl"/>
+       <widget class="QTableView" name="expenseTbl">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>1</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -115,7 +122,26 @@
        </layout>
       </item>
       <item>
-       <widget class="QTableView" name="personTbl"/>
+       <widget class="QTableView" name="personTbl">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>85</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>110</height>
+         </size>
+        </property>
+       </widget>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -159,7 +185,14 @@
        </layout>
       </item>
       <item>
-       <widget class="QTableView" name="paymentTbl"/>
+       <widget class="QTableView" name="paymentTbl">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>1</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_6">
@@ -172,8 +205,14 @@
         </item>
        </layout>
       </item>
-      <item alignment="Qt::AlignBottom">
+      <item>
        <widget class="QTextEdit" name="summaryReport">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>2</verstretch>
+         </sizepolicy>
+        </property>
         <property name="readOnly">
          <bool>true</bool>
         </property>
